@@ -2,3 +2,4 @@
 !/MainProject
 /MainProject/*
 !/MainProject/Assets
+!.gitignore
