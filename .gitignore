@@ -2,7 +2,9 @@
 !/TestLadder
 /TestLadder/*
 !/TestLadder/Assets
+
 !/TestUI
-!/TestUI/Assets
 /TestUI/*
+!/TestUI/Assets
+
 
