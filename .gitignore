@@ -1,4 +1,7 @@
 /*
 !/TestUI
+!/TestLadder
 /TestUI/*
+/TestLadder/*
+!/TestUI/Assets
 !/TestUI/Assets
