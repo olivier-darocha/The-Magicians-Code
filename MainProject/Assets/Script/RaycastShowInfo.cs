@@ -7,7 +7,7 @@ public class RaycastShowInfo : MonoBehaviour {
     private bool notredo = false;
     public bool interacted = false;
     private Ray ray;
-
+    
 	void Update () {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
