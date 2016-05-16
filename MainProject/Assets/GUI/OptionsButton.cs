@@ -35,7 +35,6 @@ public class OptionsButton : MonoBehaviour
             panelTrigger(showPanels[0], 0);
             hideAll();
         }
-
     }
 
     public void buttonTrigger(int i)
