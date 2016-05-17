@@ -1,20 +1,97 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityStandardAssets.Characters.FirstPerson;
 
-public class OptionsButton : MonoBehaviour
+public class GameplayMenuSetup : MonoBehaviour
 {
 
+    //Interacting
+    private GameObject glassObject;
+    private GameObject particles;
+    private GameObject panel;
+    private GameObject FPSController;
+    private bool showPanel;
+
+    //Programming
     private GameObject panel0;
     private GameObject panel1;
     private GameObject panel2;
     private GameObject panel3;
-
     private GameObject[] panels = new GameObject[20];
     private bool[] showPanels = new bool[20];
 
     // Use this for initialization
     void Start()
+    {
+        interactionGlassInit();
+        programmingWindowInit();
+    }
+
+    void Update()
+    {
+        if (RaycastShowInfo.IsPaused)
+        {
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                switch (RaycastShowInfo.InteractedObject.name)
+                {
+                    case "Final_glass_water":
+                        interactionGlass();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                programmingWindow();
+            }
+        }
+
+        else
+        {
+            hideInteraction();
+            hideProgramming();
+        }
+    }
+
+    //interacting part
+    void interactionGlassInit()
+    {
+        panel = GameObject.Find("Use_Glass");
+        glassObject = GameObject.Find("Final_glass_water");
+        particles = GameObject.Find("Particle_holder");
+        particles.GetComponent<ParticleSystem>().Stop();
+        particles.GetComponent<ParticleSystem>().emissionRate = 200;
+        FPSController = GameObject.Find("FPSController");
+        hideInteraction();
+    }
+
+    void interactionGlass()
+    {
+        showPanel = !showPanel;
+        panel.GetComponent<Image>().enabled = showPanel;
+        foreach (Transform child in panel.transform)
+        {
+            child.gameObject.SetActive(showPanel);
+        }
+    }
+
+    void hideInteraction()
+    {
+        showPanel = false;
+        panel.GetComponent<Image>().enabled = showPanel;
+        foreach (Transform child in panel.transform)
+        {
+            child.gameObject.SetActive(showPanel);
+        }
+    }
+
+
+
+    //programming part
+    void programmingWindowInit()
     {
         panel0Init();
         panel1Init();
@@ -26,15 +103,11 @@ public class OptionsButton : MonoBehaviour
         panels[3] = panel3;
     }
 
-    // Update is called once per frame
-    void Update()
+    void programmingWindow()
     {
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            showPanels[0] = !showPanels[0];
-            panelTrigger(showPanels[0], 0);
-            hideAll();
-        }
+        showPanels[0] = !showPanels[0];
+        panelTrigger(showPanels[0], 0);
+        hideAllChildren();
     }
 
     public void buttonTrigger(int i)
@@ -44,28 +117,28 @@ public class OptionsButton : MonoBehaviour
             case 1:
                 if (!showPanels[1])
                 {
-                    hideAll();
+                    hideAllChildren();
                     showPanels[1] = !showPanels[1];
                 }
-                else hideAll();
+                else hideAllChildren();
                 panelTrigger(showPanels[1], 1);
                 break;
             case 2:
                 if (!showPanels[2])
                 {
-                    hideAll();
+                    hideAllChildren();
                     showPanels[2] = !showPanels[2];
                 }
-                else hideAll();
+                else hideAllChildren();
                 panelTrigger(showPanels[2], 2);
                 break;
             case 3:
                 if (!showPanels[3])
                 {
-                    hideAll();
+                    hideAllChildren();
                     showPanels[3] = !showPanels[3];
                 }
-                else hideAll();
+                else hideAllChildren();
                 panelTrigger(showPanels[3], 3);
                 break;
             default:
@@ -112,7 +185,14 @@ public class OptionsButton : MonoBehaviour
 
     }
 
-    private void hideAll()
+    void hideProgramming()
+    {
+        showPanels[0] = false;
+        panelTrigger(false, 0);
+        hideAllChildren();
+    }
+
+    private void hideAllChildren()
     {
 
         for (int j = 1; j < panels.Length; j++)
@@ -120,8 +200,6 @@ public class OptionsButton : MonoBehaviour
             panelTrigger(false, j);
             showPanels[j] = false;
         }
-
-
     }
 
     private void panel0Init()
@@ -130,24 +208,18 @@ public class OptionsButton : MonoBehaviour
         showPanels[0] = false;
         panelTrigger(false, 0);
     }
-
-
-
     private void panel1Init()
     {
         panel1 = GameObject.Find("Panel 1");
         showPanels[1] = false;
         panelTrigger(false, 1);
     }
-
-
     private void panel2Init()
     {
         panel2 = GameObject.Find("Panel 2");
         showPanels[2] = false;
         panelTrigger(false, 2);
     }
-
     private void panel3Init()
     {
         panel3 = GameObject.Find("Panel 3");
@@ -155,4 +227,3 @@ public class OptionsButton : MonoBehaviour
         panelTrigger(false, 3);
     }
 }
-
