@@ -7,11 +7,14 @@ public class GameplayMenuSetup : MonoBehaviour
 {
 
     //Interacting
-    private GameObject glassObject;
+    
     private GameObject particles;
     private GameObject panel;
-    private GameObject FPSController;
     private bool showPanel;
+
+    /*private GameObject glassObject;
+    private GameObject FPSController;*/
+    
 
     //Programming
     private GameObject panel0;
@@ -30,11 +33,11 @@ public class GameplayMenuSetup : MonoBehaviour
 
     void Update()
     {
-        if (RaycastShowInfo.IsPaused)
+        if (RaycastShowInfo.isPaused)
         {
             if (Input.GetKeyUp(KeyCode.E))
             {
-                switch (RaycastShowInfo.InteractedObject.name)
+                switch (RaycastShowInfo.interactedObject.name)
                 {
                     case "Final_glass_water":
                         interactionGlass();
@@ -60,12 +63,13 @@ public class GameplayMenuSetup : MonoBehaviour
     void interactionGlassInit()
     {
         panel = GameObject.Find("Use_Glass");
-        glassObject = GameObject.Find("Final_glass_water");
         particles = GameObject.Find("Particle_holder");
         particles.GetComponent<ParticleSystem>().Stop();
         particles.GetComponent<ParticleSystem>().emissionRate = 200;
-        FPSController = GameObject.Find("FPSController");
         hideInteraction();
+
+        /*FPSController = GameObject.Find("FPSController");
+        glassObject = GameObject.Find("Final_glass_water");*/
     }
 
     void interactionGlass()

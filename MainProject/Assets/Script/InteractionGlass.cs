@@ -8,7 +8,7 @@ public class InteractionGlass : MonoBehaviour
 
     private GameObject glassObject;
     private GameObject particles;
-    private bool filled = false;
+    public static bool filled = false;
     void Start()
     {
         glassObject = GameObject.Find("Final_glass_water");
@@ -21,6 +21,7 @@ public class InteractionGlass : MonoBehaviour
             glassObject.GetComponent<Animator>().SetBool("Glass_fill", true);
             filled = true;
         }
+        particles.GetComponent<ParticleSystem>().Clear();
         particles.GetComponent<ParticleSystem>().Play();
     }
 
