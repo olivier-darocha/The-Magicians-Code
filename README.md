@@ -26,8 +26,16 @@ Lorsque le joueur trouve la solution à une énigme, certains éléments du jeu 
 #####Menu contextuel 
 Il s’agit de la fenêtre principale d’interaction lorsque le joueur souhaite modifier les propriétés d’un objet. 
 Cette fenêtre est composée de différents éléments concernant cet objet : 
-- un visuel de l’objet (TL)
-- une liste des actions possibles sur cet objet (BL)
-- des variables à glisser dans les cases du code source au milieu de l’interface (TR)
-- une partie où sont affichées les différentes conditions dont dispose le joueur (BR)
-- Le code source de cet objet, à modifier en conséquence (C)
+- un visuel de l’objet (Top Left)
+- une liste déroulante des fonctions concernant cet objet (Bottom Left)
+- des variables à glisser dans les cases du code source au milieu de l’interface (Bottom left)
+- une partie où sont affichées différents outils comme les conditions dont dispose le joueur (Right)
+- Le code source de cet objet, à modifier en conséquence (Center)
+
+## Scénario
+
+Il y a bien longtemps, un mage s'adressa à la foule de son village.
+Il prétendit que chaque parcelle de matière et chaque objet pouvaient s'animer et agir d'eux-mêmes, si l'homme leur donnait une mission précise.
+La découverte du mage transforma le village. Chacun donnait vie à son foyer, à sa terre.
+Nul ne sait comment le pire est arrivé. Un villageois a-t-il perdu le contrôle de ses créations, ou les a-t-il utilisées pour nuire aux autres ?
+Le mage fut banni. Peu après, le village entier prit le chemin de l'exode.
