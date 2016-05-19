@@ -19,18 +19,15 @@ public class CrosshairBehavior : MonoBehaviour {
         {
             if (RaycastShowInfo.isPaused)
             {
-                Debug.Log("a");
                 crosshair.GetComponent<Image>().enabled = false;
             }
             else
             {
-                Debug.Log("b");
                 crosshair.GetComponent<Image>().enabled = true;
             }
         }
         else
         {
-            Debug.Log(textOverCrosshair.GetComponent<Text>().text);
             crosshair.GetComponent<Image>().enabled = false;
         }
     }

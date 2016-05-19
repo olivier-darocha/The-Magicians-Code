@@ -28,6 +28,7 @@ public class GameplayMenuSetup : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.E))
             {
+                BAO.SetActive(false);
                 switch (RaycastShowInfo.interactedObject.name)
                 {
                     case "Final_glass_water":
@@ -39,6 +40,7 @@ public class GameplayMenuSetup : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.A))
             {
+                hideInteraction();
                 BAO.SetActive(!BAO.activeSelf);
             }
         }
