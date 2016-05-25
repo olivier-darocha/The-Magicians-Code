@@ -6,13 +6,23 @@ public class Daycycle : MonoBehaviour {
     public float speed;
     public Material[] skies;
 
+    void Start()
+    {
+        /*GameObject[] go = GameObject.FindGameObjectsWithTag("Mesh");
+        foreach(GameObject go2 in go)
+        {
+            Debug.Log(go2.transform.name + " - " + go2.GetComponent<MeshFilter>().mesh.triangles.Length / 3);
+        }*/
+    }
+
 	void Update () {
         transform.rotation = Quaternion.Euler(Time.time*speed%360,270,0);
+        if(name == "Sun") GameObject.Find("BGCamera").transform.rotation = Quaternion.Euler(GameObject.Find("FirstPersonCharacter").transform.rotation.eulerAngles.x, Time.time % 360 + GameObject.Find("FPSController").transform.rotation.eulerAngles.y, 0);
         if ((name == "Sun" && transform.rotation.eulerAngles.x > 180) ||(name == "Moon" && transform.rotation.eulerAngles.x <= 180))
         {
             transform.GetChild(0).GetComponent<Light>().intensity = 0.05f;
         }
-        else transform.GetChild(0).GetComponent<Light>().intensity = 2f;
+        else transform.GetChild(0).GetComponent<Light>().intensity = 1f;
 
         if (name == "Sun" && transform.rotation.eulerAngles.y == 270 && transform.rotation.eulerAngles.x < 30)
         {

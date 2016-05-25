@@ -20,6 +20,7 @@ public class InteractionGlass : MonoBehaviour
         {
             glassObject.GetComponent<Animator>().SetBool("Glass_fill", true);
             filled = true;
+            GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[0] = "Rempli";
         }
         particles.GetComponent<ParticleSystem>().Clear();
         particles.GetComponent<ParticleSystem>().Play();
@@ -29,8 +30,7 @@ public class InteractionGlass : MonoBehaviour
     {
         glassObject.GetComponent<Animator>().SetBool("Glass_fill", false);
         filled = false;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[0] = "Vide";
         particles.GetComponent<ParticleSystem>().Stop();
     }
-
-
 }

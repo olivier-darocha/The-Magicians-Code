@@ -46,13 +46,10 @@ public class VariablesList : MonoBehaviour {
 
     void updateList()
     {
-        for (int i = 0; i < variablesObjects.Length; i++)
+        int i;
+        for (i = 0; i < variablesList.GetComponent<VariablesInfo>().VariablesName.Length; i++)
         {
-            foreach (KeyValuePair<string, object> entry in variablesObjects[i].GetComponent<ObjectInfo>().variablesList)
-            {
-                list += entry.Key + " = " + entry.Value.ToString() + "\n";
-
-            }
+                list += variablesList.GetComponent<VariablesInfo>().VariablesName[i] + " = " + variablesList.GetComponent<VariablesInfo>().VariablesValue[i] + "\n";
         }
         variablesList.GetComponent<Text>().text = list;
     }
