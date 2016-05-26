@@ -4,5 +4,6 @@ using System.Collections;
 
 public class ToolId : MonoBehaviour {
 
-    public int id;
+    public string id;
+    //public string value;
 }

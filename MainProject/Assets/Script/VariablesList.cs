@@ -25,7 +25,7 @@ public class VariablesList : MonoBehaviour {
 
                 variablesDisplayed = !variablesDisplayed;
                 clearList();
-                updateList();
+                StartCoroutine("updateList");
             }
         }
         else
@@ -38,13 +38,13 @@ public class VariablesList : MonoBehaviour {
             else
             {
                 clearList();
-                updateList();
+                StartCoroutine("updateList");
             }
             
         }
     }
 
-    void updateList()
+    IEnumerator updateList()
     {
         int i;
         for (i = 0; i < variablesList.GetComponent<VariablesInfo>().VariablesName.Length; i++)
@@ -52,6 +52,7 @@ public class VariablesList : MonoBehaviour {
                 list += variablesList.GetComponent<VariablesInfo>().VariablesName[i] + " = " + variablesList.GetComponent<VariablesInfo>().VariablesValue[i] + "\n";
         }
         variablesList.GetComponent<Text>().text = list;
+        yield return null;
     }
     
     void clearList()

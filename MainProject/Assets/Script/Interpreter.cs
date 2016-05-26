@@ -2,21 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
+using System.Linq;
 
 public class Interpreter : MonoBehaviour
 {
 
     //TODO interpret drag-and-drop program with tools identifiers
-    private int[] userInputSequence;
+    private string userInputSequence;
     private bool confirmInput;
     private bool success;
     private int count;
-    private int[] fillGlassSequence; // initialiser en fonction de la fonction choisie
+    private string fillGlassSequence; // initialiser en fonction de la fonction choisie
     private string testEndMessage;
     private string subSequence;
     private GameObject programmingWindow;
     private string toolsTag;
-
 
     // Use this for initialization
     void Start()
@@ -35,13 +36,11 @@ public class Interpreter : MonoBehaviour
     {
         if (confirmInput)
         {
-            userInputSequence = getUserInputSequence();
-            count = longestCommonSubstring(userInputSequence.ToString(), fillGlassSequence.ToString(), out subSequence);
+            StartCoroutine("getUserInputSequence");
+            string[] parameters = new string[2] { userInputSequence, fillGlassSequence};
+            StartCoroutine("longestCommonSubstring", parameters);
 
-            Debug.Log("answer = " + fillGlassSequence.ToString());
-            Debug.Log("\nuser = " + userInputSequence.ToString());
-            Debug.Log("\nsub sequence = " + subSequence);
-
+            
             if (fillGlassSequence.Length == count)
             {
                 testEndMessage = "Succès !";
@@ -54,33 +53,33 @@ public class Interpreter : MonoBehaviour
                     testEndMessage = "Complétement faux";
                     success = false;
                 }
-                else if(Math.Abs(fillGlassSequence.Length - count) <= 2)
+                else if (Math.Abs(fillGlassSequence.Length - count) <= 2)
                 {
                     testEndMessage = "C'est presque ça !";
                     success = false;
                 }
             }
-            Debug.Log("\n" + testEndMessage);
         }
 
     }
 
-    public int longestCommonSubstring(string str1, string str2, out string sequence)
+    IEnumerator longestCommonSubstring(string[] str)
     {
-        sequence = string.Empty;
-        if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
-            return 0;
+        
+        subSequence = string.Empty;
+        if (String.IsNullOrEmpty(str[0]) || String.IsNullOrEmpty(str[1]))
+            yield return 0;
 
-        int[,] num = new int[str1.Length, str2.Length];
+        int[,] num = new int[str[0].Length, str[1].Length];
         int maxlen = 0;
         int lastSubsBegin = 0;
         StringBuilder sequenceBuilder = new StringBuilder();
 
-        for (int i = 0; i < str1.Length; i++)
+        for (int i = 0; i < str[0].Length; i++)
         {
-            for (int j = 0; j < str2.Length; j++)
+            for (int j = 0; j < str[1].Length; j++)
             {
-                if (str1[i] != str2[j])
+                if (str[0][i] != str[1][j])
                     num[i, j] = 0;
                 else
                 {
@@ -95,23 +94,24 @@ public class Interpreter : MonoBehaviour
                         int thisSubsBegin = i - num[i, j] + 1;
                         if (lastSubsBegin == thisSubsBegin)
                         {
-                            sequenceBuilder.Append(str1[i]);
+                            sequenceBuilder.Append(str[0][i]);
                         }
                         else
                         {
                             lastSubsBegin = thisSubsBegin;
                             sequenceBuilder.Length = 0;
-                            sequenceBuilder.Append(str1.Substring(lastSubsBegin, (i + 1) - lastSubsBegin));
+                            sequenceBuilder.Append(str[0].Substring(lastSubsBegin, (i + 1) - lastSubsBegin));
                         }
                     }
                 }
             }
         }
-        sequence = sequenceBuilder.ToString();
-        return maxlen;
+        subSequence = sequenceBuilder.ToString();
+        count = maxlen;
+        yield return null; 
     }
 
-    public int[] getUserInputSequence()
+    IEnumerator getUserInputSequence()
     {
         List<GameObject> childList = new List<GameObject>();
         foreach (Transform child in programmingWindow.transform)
@@ -122,12 +122,15 @@ public class Interpreter : MonoBehaviour
             }
         }
 
-        int[] inputSequence = new int[childList.Count];
-        for(int i = 0; i < childList.Count; i++)
+        string inputSequence = "";
+
+
+        foreach(GameObject obj in childList)
         {
-            inputSequence[i] = childList[i].GetComponent<ToolId>().id;
+            inputSequence += obj.GetComponent<ToolId>().id;
         }
 
-        return inputSequence;
+        userInputSequence = inputSequence;
+        yield return null;
     }
 }
