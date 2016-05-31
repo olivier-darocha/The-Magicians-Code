@@ -16,9 +16,9 @@ public class Daycycle : MonoBehaviour {
     }
 
 	void Update () {
-        transform.rotation = Quaternion.Euler(Time.time*speed%360,270,0);
+        //transform.rotation = Quaternion.Euler(Time.time*speed%360,270,0);
         if(name == "Sun") GameObject.Find("BGCamera").transform.rotation = Quaternion.Euler(GameObject.Find("FirstPersonCharacter").transform.rotation.eulerAngles.x, Time.time % 360 + GameObject.Find("FPSController").transform.rotation.eulerAngles.y, 0);
-        if ((name == "Sun" && transform.rotation.eulerAngles.x > 180) ||(name == "Moon" && transform.rotation.eulerAngles.x <= 180))
+        /*if ((name == "Sun" && transform.rotation.eulerAngles.x > 180) ||(name == "Moon" && transform.rotation.eulerAngles.x <= 180))
         {
             transform.GetChild(0).GetComponent<Light>().intensity = 0.05f;
         }
@@ -43,6 +43,6 @@ public class Daycycle : MonoBehaviour {
         else if (name == "Sun" && transform.rotation.eulerAngles.y == 90 && transform.rotation.eulerAngles.x <= 350)
         {
             RenderSettings.skybox = skies[3];
-        }
+        }*/
     }
 }
