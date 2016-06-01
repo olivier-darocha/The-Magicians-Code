@@ -5,5 +5,5 @@ using System.Collections;
 public class ToolId : MonoBehaviour {
 
     public string id;
-    //public string value;
+    public bool value;
 }

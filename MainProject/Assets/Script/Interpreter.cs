@@ -1,136 +1,102 @@
 ﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 public class Interpreter : MonoBehaviour
 {
 
-    //TODO interpret drag-and-drop program with tools identifiers
-    private string userInputSequence;
-    private bool confirmInput;
-    private bool success;
-    private int count;
-    private string fillGlassSequence; // initialiser en fonction de la fonction choisie
-    private string testEndMessage;
-    private string subSequence;
-    private GameObject programmingWindow;
-    private string toolsTag;
+    private List<GameObject> toolList;
+    public string toolTag;
+    public string variableTag;
+    public string functionTag;
 
     // Use this for initialization
     void Start()
     {
-        confirmInput = false;
-        success = false;
-        count = 0;
-        testEndMessage = "";
-        subSequence = "";
-        toolsTag = "Tool";
-        programmingWindow = GameObject.Find("Programming");
+        toolList = new List<GameObject>();
+        toolList.Clear();
     }
 
-    // Update is called once per frame
-    void Update()
+    void getToolsInProgramList()
     {
-        if (confirmInput)
-        {
-            StartCoroutine("getUserInputSequence");
-            string[] parameters = new string[2] { userInputSequence, fillGlassSequence};
-            StartCoroutine("longestCommonSubstring", parameters);
-
-            
-            if (fillGlassSequence.Length == count)
-            {
-                testEndMessage = "Succès !";
-                success = true;
-            }
-            else
-            {
-                if (Math.Abs(fillGlassSequence.Length - count) > 3)
-                {
-                    testEndMessage = "Complétement faux";
-                    success = false;
-                }
-                else if (Math.Abs(fillGlassSequence.Length - count) <= 2)
-                {
-                    testEndMessage = "C'est presque ça !";
-                    success = false;
-                }
-            }
-        }
-
+        // Attention à l'ordre dans lequel les tools sont dans la liste
+        // autre solution?
+        toolList = GameObject.FindGameObjectsWithTag(toolTag).ToList();
     }
 
-    IEnumerator longestCommonSubstring(string[] str)
+    IEnumerator interpretProgram()
     {
-        
-        subSequence = string.Empty;
-        if (String.IsNullOrEmpty(str[0]) || String.IsNullOrEmpty(str[1]))
-            yield return 0;
-
-        int[,] num = new int[str[0].Length, str[1].Length];
-        int maxlen = 0;
-        int lastSubsBegin = 0;
-        StringBuilder sequenceBuilder = new StringBuilder();
-
-        for (int i = 0; i < str[0].Length; i++)
+        getToolsInProgramList();
+        int toolCount = toolList.Count;
+        int i = 0;
+        while (i < toolCount)
         {
-            for (int j = 0; j < str[1].Length; j++)
+            GameObject currentTool = toolList[i];
+            i++;
+            switch (currentTool.GetComponent<ToolId>().id)
             {
-                if (str[0][i] != str[1][j])
-                    num[i, j] = 0;
-                else
-                {
-                    if ((i == 0) || (j == 0))
-                        num[i, j] = 1;
-                    else
-                        num[i, j] = 1 + num[i - 1, j - 1];
-
-                    if (num[i, j] > maxlen)
+                case "0": //if
+                    GameObject condition = null;
+                    foreach (Transform child in currentTool.transform)
                     {
-                        maxlen = num[i, j];
-                        int thisSubsBegin = i - num[i, j] + 1;
-                        if (lastSubsBegin == thisSubsBegin)
-                        {
-                            sequenceBuilder.Append(str[0][i]);
-                        }
-                        else
-                        {
-                            lastSubsBegin = thisSubsBegin;
-                            sequenceBuilder.Length = 0;
-                            sequenceBuilder.Append(str[0].Substring(lastSubsBegin, (i + 1) - lastSubsBegin));
-                        }
+                        if (child.gameObject.tag == variableTag)
+                            condition = child.gameObject;
                     }
-                }
+
+                    if (conditionTest(condition)) {
+                        // mettre un bool à true dans la fonction en question
+                        // pour permettre l'override de la fonction de base par celle
+                        // codé ici ?
+                        yield return null;
+                    }
+                    break;
+                case "1": // else
+                    // faire qqch
+                    break;
+                case "2": // else if
+                    GameObject otherCondition = null;
+                    foreach (Transform child in currentTool.transform)
+                    {
+                        if (child.gameObject.tag == variableTag)
+                            condition = child.gameObject;
+                    }
+
+                    if (conditionTest(otherCondition))
+                    {
+                        // mettre un bool à true dans la fonction en question
+                        // pour permettre l'override de la fonction de base par celle
+                        // codé ici ?
+                        yield return null;
+                    }
+                    break;
+                case "3": // for
+                    break;
+                case "4": // while
+                    break;
             }
+
         }
-        subSequence = sequenceBuilder.ToString();
-        count = maxlen;
-        yield return null; 
+        toolList.Clear();
+        yield return null;
     }
 
-    IEnumerator getUserInputSequence()
+    void runInterpreter()
     {
-        List<GameObject> childList = new List<GameObject>();
-        foreach (Transform child in programmingWindow.transform)
+        StartCoroutine("interpretProgram");
+    }
+
+
+    bool conditionTest(GameObject condition)
+    {
+        if (condition.GetComponent<ToolId>().id == "1") //not
+            return !condition.GetComponent<ToolId>().value;
+        else if (condition.GetComponent<ToolId>().id == "2") //variable
+            return condition.GetComponent<ToolId>().value;
+        else
         {
-            if (child.tag == toolsTag)
-            {
-                childList.Add(child.gameObject);
-            }
+            Debug.Log("error");
+            return false;
         }
-
-        string inputSequence = "";
-
-
-        foreach(GameObject obj in childList)
-        {
-            inputSequence += obj.GetComponent<ToolId>().id;
-        }
-
-        userInputSequence = inputSequence;
-        yield return null;
     }
 }
