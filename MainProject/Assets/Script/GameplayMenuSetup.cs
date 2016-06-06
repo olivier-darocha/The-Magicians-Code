@@ -123,7 +123,7 @@ public class GameplayMenuSetup : MonoBehaviour
     {
         if (GameObject.Find("Dropdown"))
         {
-            Debug.Log(GameObject.Find("Content").transform.GetChild(0).GetComponent<Text>().text.Split('\n').Length - 1);
+            //Debug.Log(GameObject.Find("Content").transform.GetChild(0).GetComponent<Text>().text.Split('\n').Length - 1);
             Dropdown.GetComponent<Dropdown>().options.Clear();
             foreach (Function fonction in interactedObject.GetComponent<ObjectInfo>().Functions)
             {
