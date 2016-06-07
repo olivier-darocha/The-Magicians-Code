@@ -7,24 +7,12 @@ using UnityEngine.UI;
 public class Interpreter : MonoBehaviour
 {
 
-    private List<GameObject> toolList;
     public string toolTag;
     public string variableTag;
     public string functionTag;
 
-    // Use this for initialization
-    void Start()
-    {
-        toolList = new List<GameObject>();
-        toolList.Clear();
-    }
 
-
-    void Update()
-    {
-        runInterpreter();
-    }
-    void getToolsInProgramList()
+    List<GameObject> getToolsInProgramList()
     {
 
         //
@@ -44,10 +32,10 @@ public class Interpreter : MonoBehaviour
 
         // Attention à l'ordre dans lequel les tools sont dans la liste
         // autre solution?
-        toolList = GameObject.FindGameObjectsWithTag(toolTag).ToList();
+        return GameObject.FindGameObjectsWithTag(toolTag).ToList();
     }
 
-    
+
 
     bool conditionTest(GameObject condition)
     {
@@ -62,32 +50,25 @@ public class Interpreter : MonoBehaviour
         }
     }
 
-    void runInterpreter()
+    public void runInterpreter(string funcId)
     {
-        string funcName = GameObject.Find("Label").GetComponent<Text>().text;
-        switch(funcName)
-        {
-            case "Remplir":
-                StartCoroutine("interpretRemplir");
-                break;
-            case "Boire":
-                StartCoroutine("interpretBoire");
-                break;
-            default:
-                break;
-        }     
+        Debug.Log("aa");
+        StopAllCoroutines();
+        StartCoroutine(funcId);
     }
 
 
     IEnumerator interpretRemplir()
     {
-        getToolsInProgramList();
+        Debug.Log("bb");
+        List<GameObject> toolList = getToolsInProgramList();
         int toolCount = toolList.Count;
         int i = 0;
         while (i < toolCount)
         {
             GameObject currentTool = toolList[i];
             i++;
+            // quelle outil utilisé par l'utilisateur?
             switch (currentTool.GetComponent<ToolId>().id)
             {
                 case "0": //if
@@ -100,11 +81,24 @@ public class Interpreter : MonoBehaviour
                         else if (child.gameObject.tag == functionTag)
                             function = child.gameObject;
                     }
-                    if (function.GetComponent<FunctionId>().id == 0)
-                        InteractionGlass.allowFill = !conditionTest(condition);
-                    else
-                    { //do something else
+
+                    // quelle fonction utilisé par l'utilisateur?
+                    switch (function.GetComponent<FunctionId>().functionId)
+                    {
+                        case "0":
+                            // autorise l'exécution de la fonction 
+                            // si la condition du if est à true (verre vide)
+                            // sinon -> mauvais code de la part de l'user
+                            InteractionObjects.allowFill = conditionTest(condition);
+                            break;
+                        case "1":
+                            break;
+                        case "2":
+                            break;
+                        default:
+                            break;
                     }
+
 
                     break;
                 case "1": // else
@@ -115,7 +109,7 @@ public class Interpreter : MonoBehaviour
                     foreach (Transform child in currentTool.transform)
                     {
                         if (child.gameObject.tag == variableTag)
-                            condition = child.gameObject;
+                            otherCondition = child.gameObject;
                     }
 
                     if (conditionTest(otherCondition))
@@ -123,7 +117,6 @@ public class Interpreter : MonoBehaviour
                         // mettre un bool à true dans la fonction en question
                         // pour permettre l'override de la fonction de base par celle
                         // codé ici ?
-                        yield return null;
                     }
                     break;
                 case "3": // for
@@ -139,13 +132,15 @@ public class Interpreter : MonoBehaviour
 
     IEnumerator interpretBoire()
     {
-        getToolsInProgramList();
+        Debug.Log("cc");
+        List<GameObject> toolList = getToolsInProgramList();
         int toolCount = toolList.Count;
         int i = 0;
         while (i < toolCount)
         {
             GameObject currentTool = toolList[i];
             i++;
+            // quelle outil utilisé par l'utilisateur?
             switch (currentTool.GetComponent<ToolId>().id)
             {
                 case "0": //if
@@ -158,15 +153,27 @@ public class Interpreter : MonoBehaviour
                         else if (child.gameObject.tag == functionTag)
                             function = child.gameObject;
                     }
-                    if (function.GetComponent<FunctionId>().id == 0)
+
+                    // quelle fonction utilisé par l'utilisateur?
+                    switch (function.GetComponent<FunctionId>().functionId)
                     {
-                        // do domething
-                    }
-                    else
-                    { //do something else
+                        case "0":
+
+                            break;
+                        case "1":
+                            // autorise l'exécution de la fonction 
+                            // si la condition du if est à true (verre plein)
+                            // sinon -> mauvais code de la part de l'user
+                            InteractionObjects.allowEmpty = conditionTest(condition);
+                            break;
+                        case "2":
+                            break;
+                        default:
+                            break;
                     }
 
                     break;
+
                 case "1": // else
                     // faire qqch
                     break;
