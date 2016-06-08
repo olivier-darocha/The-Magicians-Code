@@ -5,13 +5,13 @@ public class VariableId : MonoBehaviour
 {
     public string id;
     public int idVar;
-    public bool value;
+    public object value;
 
     void Update()
     {
         switch (idVar) {
             case 0:
-                value = InteractionObjects.empty;
+                value = (float)InteractionObjects.quantity;
                 break;
             default:
                 break;

@@ -40,9 +40,9 @@ public class Interpreter : MonoBehaviour
     bool conditionTest(GameObject condition)
     {
         if (condition.GetComponent<VariableId>().id == "0") //not
-            return !condition.GetComponent<VariableId>().value;
+            return false; //!condition.GetComponent<VariableId>().value;
         else if (condition.GetComponent<VariableId>().id == "1") //variable
-            return condition.GetComponent<VariableId>().value;
+            return false;//condition.GetComponent<VariableId>().value;
         else
         {
             Debug.Log("error");
@@ -52,7 +52,6 @@ public class Interpreter : MonoBehaviour
 
     public void runInterpreter(string funcId)
     {
-        Debug.Log("aa");
         StopAllCoroutines();
         StartCoroutine(funcId);
     }
@@ -60,20 +59,22 @@ public class Interpreter : MonoBehaviour
 
     IEnumerator interpretRemplir()
     {
-        Debug.Log("bb");
+        GameObject condition = null;
+        GameObject function = null;
         List<GameObject> toolList = getToolsInProgramList();
         int toolCount = toolList.Count;
         int i = 0;
         while (i < toolCount)
         {
+            condition = null;
+            function = null;
             GameObject currentTool = toolList[i];
             i++;
             // quelle outil utilisé par l'utilisateur?
             switch (currentTool.GetComponent<ToolId>().id)
             {
                 case "0": //if
-                    GameObject condition = null;
-                    GameObject function = null;
+                    
                     foreach (Transform child in currentTool.transform)
                     {
                         if (child.gameObject.tag == variableTag)
@@ -86,10 +87,10 @@ public class Interpreter : MonoBehaviour
                     switch (function.GetComponent<FunctionId>().functionId)
                     {
                         case "0":
-                            // autorise l'exécution de la fonction 
-                            // si la condition du if est à true (verre vide)
-                            // sinon -> mauvais code de la part de l'user
-                            InteractionObjects.allowFill = conditionTest(condition);
+                            // animation de remplissage pour une petite dosage d'eau
+                            // if = petite dose
+                            // while = verre rempli
+                            
                             break;
                         case "1":
                             break;
@@ -105,23 +106,46 @@ public class Interpreter : MonoBehaviour
                     // faire qqch
                     break;
                 case "2": // else if
-                    GameObject otherCondition = null;
                     foreach (Transform child in currentTool.transform)
                     {
                         if (child.gameObject.tag == variableTag)
-                            otherCondition = child.gameObject;
+                            condition = child.gameObject;
                     }
 
-                    if (conditionTest(otherCondition))
+                    if (conditionTest(condition))
                     {
                         // mettre un bool à true dans la fonction en question
                         // pour permettre l'override de la fonction de base par celle
                         // codé ici ?
                     }
                     break;
-                case "3": // for
+                case "3": // while
+                    foreach (Transform child in currentTool.transform)
+                    {
+                        if (child.gameObject.tag == variableTag)
+                            condition = child.gameObject;
+                        else if (child.gameObject.tag == functionTag)
+                            function = child.gameObject;
+                    }
+
+                    // quelle fonction utilisé par l'utilisateur?
+                    switch (function.GetComponent<FunctionId>().functionId)
+                    {
+                        case "0":
+                            // autorise l'exécution de la fonction 
+                            // si la condition du if est à true (verre vide)
+                            // sinon -> mauvais code de la part de l'user
+                           // InteractionObjects.allowFill = conditionTest(condition);
+                            break;
+                        case "1":
+                            break;
+                        case "2":
+                            break;
+                        default:
+                            break;
+                    }
                     break;
-                case "4": // while
+                case "4": // fore
                     break;
             }
 
@@ -132,7 +156,6 @@ public class Interpreter : MonoBehaviour
 
     IEnumerator interpretBoire()
     {
-        Debug.Log("cc");
         List<GameObject> toolList = getToolsInProgramList();
         int toolCount = toolList.Count;
         int i = 0;
