@@ -42,8 +42,8 @@ public class Ladder : MonoBehaviour {
             climbing = false;
             Player.GetComponent<Rigidbody>().useGravity = true;
             Player.GetComponent<Rigidbody>().isKinematic = true;
-            Player.GetComponent<FirstPersonController>().m_WalkSpeed = 3;
-            Player.GetComponent<FirstPersonController>().m_RunSpeed = 5;
+            Player.GetComponent<FirstPersonController>().m_WalkSpeed = 5;
+            Player.GetComponent<FirstPersonController>().m_RunSpeed = 10;
         }
     }
 

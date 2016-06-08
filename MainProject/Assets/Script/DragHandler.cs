@@ -27,7 +27,6 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-
         transform.position = Input.mousePosition;
     }
 
@@ -41,8 +40,15 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             transform.position = startPosition;
             transform.SetParent(startParent);
         }
+        else
+        {
+            GameObject go = Instantiate(gameObject);
+            go.transform.SetParent(startParent);
+            go.transform.position = startPosition;
+            go.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        }
         GetComponent<CanvasGroup>().blocksRaycasts = true;
-
+        Destroy(gameObject);
     }
 
 }
