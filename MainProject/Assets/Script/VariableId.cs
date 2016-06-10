@@ -11,7 +11,7 @@ public class VariableId : MonoBehaviour
     {
         switch (idVar) {
             case 0:
-                value = (float)InteractionObjects.quantity;
+                value = (float)InteractionGlass.quantity;
                 break;
             default:
                 break;

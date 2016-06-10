@@ -10,13 +10,14 @@ public class BetterInterpreter : MonoBehaviour
     public string toolTag;
     public string variableTag;
     public string functionTag;
-    public static bool interpretEnd = false;
     private GameObject use_glass;
+    private GameObject use_heater;
 
 
     void Start()
     {
         use_glass = GameObject.Find("Use_Glass");
+        use_heater = GameObject.Find("Use_Heater");
     }
     List<GameObject> getToolsInProgramList()
     {
@@ -59,7 +60,6 @@ public class BetterInterpreter : MonoBehaviour
 
     IEnumerator interpretRemplir()
     {
-        interpretEnd = false;
         GameObject functionContainer = null;
         List<GameObject> codeContent = new List<GameObject>();
         List<GameObject> toolList = getToolsInProgramList();
@@ -75,7 +75,121 @@ public class BetterInterpreter : MonoBehaviour
             switch (currentTool.GetComponent<ToolId>().id)
             {
                 case "0": //if
-                    InteractionObjects.toolUsed = 0;
+                    InteractionGlass.toolUsed = 0;
+                    if (ifFunction(currentTool)) // condition à true on exécute le programme situé dans le if
+                    {
+
+                        // cherche les enfants dans le sous-dossier 'functions' dans le dossier 'if'
+                        foreach (Transform child in currentTool.transform)
+                        {
+                            if (child.gameObject.tag == functionTag)
+                            {
+                                functionContainer = child.gameObject;
+                                foreach (Transform c in functionContainer.transform)
+                                {
+                                    codeContent.Add(c.gameObject);
+                                }
+                            }
+                        }
+                        int j = 0;
+                        while (j < codeContent.Count)
+                        {
+                            switch (codeContent[j].GetComponent<FunctionId>().functionId)
+                            {
+                                case "0":// remplir une dose de verre
+                                    InteractionGlass.allowFill = true;
+                                    if (InteractionGlass.fillMode < 3)
+                                        InteractionGlass.fillMode++;
+                                    else
+                                        InteractionGlass.overflow = true;
+                                    break;
+                                case "1":
+                                    break;
+                                case "2":
+                                    break;
+                                default:
+                                    break;
+                            }
+                            j++;
+                        }
+
+                    }
+                    else
+                    {
+                        Debug.Log("15");
+                        InteractionGlass.allowFill = false;
+                        break; // condition à false, on passe à la suite du programme
+                    }
+
+                    break;
+                case "1": // else
+                    // faire qqch
+                    break;
+                case "2":
+                    break;
+                case "3": // while
+                    InteractionGlass.toolUsed = 3;
+                    // condition à true on exécute le programme situé dans le if
+                    foreach (Transform child in currentTool.transform)
+                    {
+                        if (child.gameObject.tag == functionTag)
+                        {
+                            functionContainer = child.gameObject;
+                            foreach (Transform c in functionContainer.transform)
+                            {
+                                codeContent.Add(c.gameObject);
+                            }
+                        }
+                    }
+                    while (whileFunction(currentTool))
+                    {
+                        for (int k = 0; k < codeContent.Count; k++)
+                        {
+                            switch (codeContent[k].GetComponent<FunctionId>().functionId)
+                            {
+                                case "0": // remplir une dose de verre
+                                    if (InteractionGlass.fillMode < 3)
+                                        InteractionGlass.fillMode++;
+                                    else
+                                        InteractionGlass.overflow = true;
+                                    break;
+                                case "1":
+                                    break;
+                                case "2":
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "4": // for
+                    break;
+            }
+
+        }
+        yield return StartCoroutine(use_glass.GetComponent<InteractionGlass>().fillGlass());
+    }
+
+
+    IEnumerator interpretAddLog()
+    {
+        GameObject functionContainer = null;
+        List<GameObject> codeContent = new List<GameObject>();
+        List<GameObject> toolList = getToolsInProgramList();
+        int toolCount = toolList.Count;
+        int i = 0;
+        while (i < toolCount)
+        {
+            codeContent.Clear();
+            functionContainer = null;
+            GameObject currentTool = toolList[i];
+            i++;
+            // quelle outil utilisé par l'utilisateur?
+            switch (currentTool.GetComponent<ToolId>().id)
+            {
+                case "0": //if
+                    InteractionGlass.toolUsed = 0;
                     if (ifFunction(currentTool)) // condition à true on exécute le programme situé dans le if
                     {
 
@@ -99,16 +213,13 @@ public class BetterInterpreter : MonoBehaviour
                                 case "0":
                                     // animation de remplissage pour une petite dosage d'eau
                                     // if = petite dose
-                                    // while = verre rempli
-                                    InteractionObjects.allowFill = true;
-                                    if (InteractionObjects.fillMode < 3)
-                                        InteractionObjects.fillMode++;
-                                    else
-                                        InteractionObjects.overflow = true;
-                                    Debug.Log("interpreter "+InteractionObjects.fillMode);
-                                    Debug.Log("interpreter " + interpretEnd);
+                                    // while = verre rempli  
                                     break;
-                                case "1":
+                                case "1": // ajouter bûche
+                                    Debug.Log("78");
+                                    InteractionHeater.logNum++;
+                                    if(InteractionHeater.triggerNum <= 4)
+                                        InteractionHeater.triggerNum++;
                                     break;
                                 case "2":
                                     break;
@@ -119,13 +230,6 @@ public class BetterInterpreter : MonoBehaviour
                         }
 
                     }
-                    else
-                    {
-                        Debug.Log("15");
-                        InteractionObjects.allowFill = false;
-                        break; // condition à false, on passe à la suite du programme
-                    }
-
                     break;
                 case "1": // else
                     // faire qqch
@@ -133,7 +237,7 @@ public class BetterInterpreter : MonoBehaviour
                 case "2":
                     break;
                 case "3": // while
-                    InteractionObjects.toolUsed = 3;
+                    InteractionGlass.toolUsed = 3;
                     // condition à true on exécute le programme situé dans le if
                     foreach (Transform child in currentTool.transform)
                     {
@@ -153,15 +257,12 @@ public class BetterInterpreter : MonoBehaviour
                             switch (codeContent[k].GetComponent<FunctionId>().functionId)
                             {
                                 case "0":
-                                    // animation de remplissage pour une petite dosage d'eau
-                                    // if = petite dose
-                                    // while = verre rempli
-                                    if (InteractionObjects.fillMode < 3)
-                                        InteractionObjects.fillMode++;
-                                    else
-                                        InteractionObjects.overflow = true;
                                     break;
                                 case "1":
+                                    
+                                    InteractionHeater.logNum++;
+                                    if (InteractionHeater.triggerNum <= 5)
+                                        InteractionHeater.triggerNum++;
                                     break;
                                 case "2":
                                     break;
@@ -176,8 +277,8 @@ public class BetterInterpreter : MonoBehaviour
             }
 
         }
-        interpretEnd = true;
-        yield return StartCoroutine(use_glass.GetComponent<InteractionObjects>().fillGlass());
+
+        yield return StartCoroutine(use_heater.GetComponent<InteractionHeater>().addLog());
     }
 
 

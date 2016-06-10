@@ -11,6 +11,7 @@ public class GameplayMenuSetup : MonoBehaviour
     public static bool interfaceProgramActive;
     private bool inputE;
     private bool inputA;
+    private int panelId;
     private GameObject FPSControl;
     private GameObject overlayUse;
     private GameObject overlayProgram;
@@ -19,7 +20,7 @@ public class GameplayMenuSetup : MonoBehaviour
 
     //Interacting
 
-    private GameObject panel;
+    private GameObject[] panels;
     private bool showPanel;
     private GameObject Dropdown;
 
@@ -30,12 +31,14 @@ public class GameplayMenuSetup : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        panelId = 0;
         FPSControl = GameObject.Find("FPSController");
         inputE = false;
         inputA = false;
         interfaceUseActive = false;
         interfaceProgramActive = false;
-        interactionGlassInit();
+        panelsInit();
+        hideInteraction();
         overlayActive = false;
         overlayProgram = GameObject.Find("Overlay_Program");
         overlayUse = GameObject.Find("Overlay_Use");
@@ -46,76 +49,90 @@ public class GameplayMenuSetup : MonoBehaviour
 
     void Update()
     {
-        inputE = Input.GetKeyUp(KeyCode.E);
-        inputA = Input.GetKeyUp(KeyCode.A);
-
-        if (Physics.Raycast(RaycastShowInfo.ray, out RaycastShowInfo.hit, 3) && RaycastShowInfo.hit.collider.gameObject.tag == "Programmable")
+        if (Input.GetKeyUp(KeyCode.Escape)) // quitte l'interface
         {
-            if (storedObject != RaycastShowInfo.hit.collider.gameObject)
-                storedObject = RaycastShowInfo.hit.collider.gameObject;
-
-            if (interfaceUseActive || interfaceProgramActive)
-                overlayActive = false;
-            else
-                overlayActive = true;
-
-            inputBehavior(storedObject);
+            overlayActive = true;
+            interfaceUseActive = false;
+            interfaceProgramActive = false;
+            pauseSwitch(true);
+            hideInteraction();
+            BAO.SetActive(false);
         }
-        else if (interfaceProgramActive)
-        {
-            inputProgramBehavior(storedObject);
-        }
-        else if (interfaceUseActive)
-        {
 
-            inputUseBehavior();
-        }
         else
         {
-            overlayActive = false;
-        }
+            inputE = Input.GetKeyUp(KeyCode.E);
+            inputA = Input.GetKeyUp(KeyCode.A);
+            if (Physics.Raycast(RaycastShowInfo.ray, out RaycastShowInfo.hit, 3) && RaycastShowInfo.hit.collider.gameObject.tag == "Programmable")
+            {
+                if (storedObject != RaycastShowInfo.hit.collider.gameObject)
+                    storedObject = RaycastShowInfo.hit.collider.gameObject;
 
-        overlayProgram.SetActive(overlayActive);
-        overlayUse.SetActive(overlayActive);
-    }
+                if (interfaceUseActive || interfaceProgramActive)
+                    overlayActive = false;
+                else
+                    overlayActive = true;
 
+                inputBehavior(storedObject);
+            }
+            else if (interfaceProgramActive)
+            {
+                inputProgramBehavior(storedObject);
+            }
+            else if (interfaceUseActive)
+            {
 
-    //interacting part
-    void interactionGlassInit()
-    {
-        panel = GameObject.Find("Use_Glass");
-        hideInteraction();
-    }
+                inputUseBehavior();
+            }
+            else
+            {
+                overlayActive = false;
+            }
 
-    void interactionGlass()
-    {
-        showPanel = !showPanel;
-        panel.SetActive(showPanel);
-        foreach (Transform child in panel.transform)
-        {
-            child.gameObject.SetActive(showPanel);
+            overlayProgram.SetActive(overlayActive);
+            overlayUse.SetActive(overlayActive);
         }
     }
 
     void hideInteraction()
     {
-        showPanel = false;
-        panel.SetActive(showPanel);
-        foreach (Transform child in panel.transform)
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("UseWindows"))
         {
-            child.gameObject.SetActive(showPanel);
+            showPanel = false;
+            obj.SetActive(showPanel);
+            foreach (Transform child in obj.transform)
+            {
+                child.gameObject.SetActive(showPanel);
+            }
         }
     }
 
+
+    void panelsInit()
+    {
+        panels = new GameObject[2];
+        panels[0] = GameObject.Find("Use_Glass");
+        panels[1] = GameObject.Find("Use_Heater");
+    }
     void selectInteractionWindow(GameObject interactedObject)
     {
+        
         switch (interactedObject.name)
         {
             case "Final_glass_water":
-                interactionGlass();
+                panelId = 0;
+                break;
+            case "Chauffage":
+                panelId = 1;
                 break;
             default:
                 break;
+        }
+        showPanel = !showPanel;
+        panels[panelId].SetActive(showPanel);
+        foreach (Transform child in panels[panelId].transform)
+        {
+            child.gameObject.SetActive(showPanel);
         }
     }
 
@@ -174,45 +191,13 @@ public class GameplayMenuSetup : MonoBehaviour
         yield return null;
     }
 
-    /*public void UpdateBAOvariables()
-    {
-        foreach(Transform go in BAO.transform.GetChild(1).GetChild(0).GetChild(2))
-        {
-            Destroy(go.gameObject);
-        }
-        int i;
-        GameObject variables = GameObject.Find("Variables_List");
-        for (i = 0; i < variables.GetComponent<VariablesInfo>().VariablesName.Length; i++)
-        {
-            foreach (string varAssociated in GameObject.Find(GameObject.Find("Dropdown").GetComponent<Dropdown>().options[GameObject.Find("Dropdown").GetComponent<Dropdown>().value].text).GetComponent<Function>().VariablesAssociated)
-            {
-                if(variables.GetComponent<VariablesInfo>().VariablesName[i] == varAssociated)
-                {
-                    GameObject var = new GameObject();
-                    var.transform.parent = BAO.transform.GetChild(1).GetChild(0).GetChild(2);
-                    var.transform.name = variables.GetComponent<VariablesInfo>().VariablesName[i];
-                    Text varText = var.AddComponent<Text>();
-                    varText.text = variables.GetComponent<VariablesInfo>().VariablesName[i] + " - " + variables.GetComponent<VariablesInfo>().VariablesValue[i];
-                    varText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                    varText.resizeTextForBestFit = true;
-                    var.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.85f);
-                    var.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                    var.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -i * 15, 0);
-                    var.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-                    varText.color = Color.black;
-                    break;
-                }
-            }
-        }
-    }*/
-
     void pauseSwitch(bool state)
     {
         Screen.lockCursor = state;
         FPSControl.GetComponent<FirstPersonController>().enabled = state;
     }
 
-    void inputBehavior(GameObject objectTargeted)
+    void inputBehavior(GameObject objectTargeted) // aucune UI affichée
     {
 
         if (inputE)
@@ -287,7 +272,7 @@ public class GameplayMenuSetup : MonoBehaviour
 
     }
 
-    void inputProgramBehavior(GameObject objectTargeted)
+    void inputProgramBehavior(GameObject objectTargeted) // UI program déjà affichée
     {
         if (inputE)
         {
@@ -308,7 +293,7 @@ public class GameplayMenuSetup : MonoBehaviour
         }
     }
 
-    void inputUseBehavior()
+    void inputUseBehavior() // UI use déjà affichée
     {
 
         if (inputE)

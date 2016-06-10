@@ -135,7 +135,7 @@ public class Interpreter : MonoBehaviour
                             // autorise l'exécution de la fonction 
                             // si la condition du if est à true (verre vide)
                             // sinon -> mauvais code de la part de l'user
-                           // InteractionObjects.allowFill = conditionTest(condition);
+                           // InteractionGlass.allowFill = conditionTest(condition);
                             break;
                         case "1":
                             break;
@@ -187,7 +187,7 @@ public class Interpreter : MonoBehaviour
                             // autorise l'exécution de la fonction 
                             // si la condition du if est à true (verre plein)
                             // sinon -> mauvais code de la part de l'user
-                            InteractionObjects.allowEmpty = conditionTest(condition);
+                            InteractionGlass.allowEmpty = conditionTest(condition);
                             break;
                         case "2":
                             break;
