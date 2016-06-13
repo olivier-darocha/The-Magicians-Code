@@ -33,8 +33,7 @@ public class InteractionHeater : MonoBehaviour
             */
         }
         if (snow.transform.localScale.y > 0)
-            triggerAnimation();
-        Debug.Log(triggerNum);
+            StartCoroutine("triggerAnimation");
         yield return null;
     }
 
@@ -63,7 +62,7 @@ public class InteractionHeater : MonoBehaviour
         return a;
     }
 
-    void triggerAnimation()
+    IEnumerator triggerAnimation()
     {
         switch (triggerNum)
         {
@@ -78,17 +77,19 @@ public class InteractionHeater : MonoBehaviour
                 snow.GetComponent<Animator>().SetTrigger(triggers[1]);
                 break;
             case 3:
+                
                 resetAllTriggers();
                 snow.GetComponent<Animator>().SetTrigger(triggers[2]);
                 break;
             case 4:
+                
                 resetAllTriggers();
                 snow.GetComponent<Animator>().SetTrigger(triggers[3]);
                 break;
-            case 5:
-                resetAllTriggers();
-                break;
+           
         }
+
+        yield return null;
     }
 
     void resetAllTriggers()

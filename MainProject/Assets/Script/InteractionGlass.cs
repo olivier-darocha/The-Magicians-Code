@@ -40,8 +40,6 @@ public class InteractionGlass : MonoBehaviour
 
     public IEnumerator fillGlass()
     {
-
-        Debug.Log(water.transform.localScale.y);
         if (allowFill)
         {
             resetAllTriggers();

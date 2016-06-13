@@ -216,9 +216,8 @@ public class BetterInterpreter : MonoBehaviour
                                     // while = verre rempli  
                                     break;
                                 case "1": // ajouter bûche
-                                    Debug.Log("78");
                                     InteractionHeater.logNum++;
-                                    if(InteractionHeater.triggerNum <= 4)
+                                    if(InteractionHeater.triggerNum < 4)
                                         InteractionHeater.triggerNum++;
                                     break;
                                 case "2":
@@ -259,9 +258,8 @@ public class BetterInterpreter : MonoBehaviour
                                 case "0":
                                     break;
                                 case "1":
-                                    
                                     InteractionHeater.logNum++;
-                                    if (InteractionHeater.triggerNum <= 5)
+                                    if (InteractionHeater.triggerNum < 4)
                                         InteractionHeater.triggerNum++;
                                     break;
                                 case "2":
