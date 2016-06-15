@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public static GameObject item;    // i changed itembeigdraged to item.
-
+    public Vector2 Size;
     public GameObject DragWindow;
+    public string text;
     Transform startParent;
     Vector3 startPosition;
-    bool start = true;
     //Sprite sprite;
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -48,7 +48,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             go.GetComponent<CanvasGroup>().blocksRaycasts = true;
         }
         GetComponent<CanvasGroup>().blocksRaycasts = true;
-        Destroy(gameObject);
+        if (transform.parent != startParent) Destroy(gameObject);
     }
 
 }
