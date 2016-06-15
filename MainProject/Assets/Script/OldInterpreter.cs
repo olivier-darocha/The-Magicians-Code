@@ -127,7 +127,7 @@ public class OldInterpreter : MonoBehaviour
 
         foreach(GameObject obj in childList)
         {
-            inputSequence += obj.GetComponent<ToolId>().id;
+            inputSequence += obj.GetComponent<ConditionScript>().toolId;
         }
 
         userInputSequence = inputSequence;

@@ -39,9 +39,9 @@ public class Interpreter : MonoBehaviour
 
     bool conditionTest(GameObject condition)
     {
-        if (condition.GetComponent<VariableId>().id == "0") //not
+        if (condition.GetComponent<VariableId>().varId == "0") //not
             return false; //!condition.GetComponent<VariableId>().value;
-        else if (condition.GetComponent<VariableId>().id == "1") //variable
+        else if (condition.GetComponent<VariableId>().varId == "1") //variable
             return false;//condition.GetComponent<VariableId>().value;
         else
         {
@@ -71,7 +71,7 @@ public class Interpreter : MonoBehaviour
             GameObject currentTool = toolList[i];
             i++;
             // quelle outil utilisé par l'utilisateur?
-            switch (currentTool.GetComponent<ToolId>().id)
+            switch (currentTool.GetComponent<ConditionScript>().toolId)
             {
                 case "0": //if
                     
@@ -145,7 +145,7 @@ public class Interpreter : MonoBehaviour
                             break;
                     }
                     break;
-                case "4": // fore
+                case "4": // for
                     break;
             }
 
@@ -164,7 +164,7 @@ public class Interpreter : MonoBehaviour
             GameObject currentTool = toolList[i];
             i++;
             // quelle outil utilisé par l'utilisateur?
-            switch (currentTool.GetComponent<ToolId>().id)
+            switch (currentTool.GetComponent<ConditionScript>().toolId)
             {
                 case "0": //if
                     GameObject condition = null;

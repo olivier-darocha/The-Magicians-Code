@@ -8,7 +8,7 @@ public class BetterInterpreter : MonoBehaviour
 {
 
     public string toolTag;
-    public string variableTag;
+    public string conditionTag;
     public string functionTag;
     private GameObject use_glass;
     private GameObject use_heater;
@@ -48,14 +48,13 @@ public class BetterInterpreter : MonoBehaviour
         StartCoroutine(funcId);
     }
 
-    bool ifFunction(GameObject ifTool)
+    bool conditionFunction(GameObject tool)
     {
-        return true;// ifTool.GetComponent<ifScript>().value;
-    }
 
-    bool whileFunction(GameObject whileTool)
-    {
-        return false;// whileTool.GetComponent<whileScript>().value;
+        tool.GetComponent<ConditionScript>().Init(tool, conditionTag);
+        Debug.Log(tool.GetComponent<ConditionScript>().getConditionValue());
+        return tool.GetComponent<ConditionScript>().getConditionValue();
+        //return true;// ifTool.GetComponent<ifScript>().value;
     }
 
     IEnumerator interpretRemplir()
@@ -65,6 +64,7 @@ public class BetterInterpreter : MonoBehaviour
         List<GameObject> toolList = getToolsInProgramList();
         int toolCount = toolList.Count;
         int i = 0;
+        Debug.Log(toolCount);
         while (i < toolCount)
         {
             codeContent.Clear();
@@ -72,11 +72,13 @@ public class BetterInterpreter : MonoBehaviour
             GameObject currentTool = toolList[i];
             i++;
             // quelle outil utilisé par l'utilisateur?
-            switch (currentTool.GetComponent<ToolId>().id)
+            Debug.Log(currentTool.GetComponent<ConditionScript>().toolId);
+            switch (currentTool.GetComponent<ConditionScript>().toolId)
             {
                 case "0": //if
                     InteractionGlass.toolUsed = 0;
-                    if (ifFunction(currentTool)) // condition à true on exécute le programme situé dans le if
+                    
+                    if (conditionFunction(currentTool)) // condition à true on exécute le programme situé dans le if
                     {
 
                         // cherche les enfants dans le sous-dossier 'functions' dans le dossier 'if'
@@ -98,7 +100,7 @@ public class BetterInterpreter : MonoBehaviour
                             {
                                 case "0":// remplir une dose de verre
                                     InteractionGlass.allowFill = true;
-                                    if (InteractionGlass.fillMode < 3)
+                                    if (InteractionGlass.fillMode < 4)
                                         InteractionGlass.fillMode++;
                                     else
                                         InteractionGlass.overflow = true;
@@ -116,7 +118,6 @@ public class BetterInterpreter : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("15");
                         InteractionGlass.allowFill = false;
                         break; // condition à false, on passe à la suite du programme
                     }
@@ -141,14 +142,14 @@ public class BetterInterpreter : MonoBehaviour
                             }
                         }
                     }
-                    while (whileFunction(currentTool))
+                    while (conditionFunction(currentTool))
                     {
                         for (int k = 0; k < codeContent.Count; k++)
                         {
                             switch (codeContent[k].GetComponent<FunctionId>().functionId)
                             {
                                 case "0": // remplir une dose de verre
-                                    if (InteractionGlass.fillMode < 3)
+                                    if (InteractionGlass.fillMode < 4)
                                         InteractionGlass.fillMode++;
                                     else
                                         InteractionGlass.overflow = true;
@@ -186,11 +187,11 @@ public class BetterInterpreter : MonoBehaviour
             GameObject currentTool = toolList[i];
             i++;
             // quelle outil utilisé par l'utilisateur?
-            switch (currentTool.GetComponent<ToolId>().id)
+            switch (currentTool.GetComponent<ConditionScript>().toolId)
             {
                 case "0": //if
                     InteractionGlass.toolUsed = 0;
-                    if (ifFunction(currentTool)) // condition à true on exécute le programme situé dans le if
+                    if (conditionFunction(currentTool)) // condition à true on exécute le programme situé dans le if
                     {
 
                         // cherche les enfants dans le sous-dossier 'functions' dans le dossier 'if'
@@ -249,7 +250,7 @@ public class BetterInterpreter : MonoBehaviour
                             }
                         }
                     }
-                    while (whileFunction(currentTool))
+                    while (conditionFunction(currentTool))
                     {
                         for (int k = 0; k < codeContent.Count; k++)
                         {

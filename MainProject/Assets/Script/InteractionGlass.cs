@@ -72,8 +72,6 @@ public class InteractionGlass : MonoBehaviour
                 break;
             case 3:
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[2]);
-                particles.GetComponent<ParticleSystem>().Clear();
-                particles.GetComponent<ParticleSystem>().Play();
                 break;
             case 4:
                 particles.GetComponent<ParticleSystem>().Clear();
