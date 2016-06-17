@@ -7,6 +7,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 {
     public static GameObject item;    // i changed itembeigdraged to item.
     public Vector2 Size;
+    public string dragID;
     public GameObject DragWindow;
     public string text;
     Transform startParent;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class Slot : MonoBehaviour, IDropHandler
 {
@@ -10,6 +10,8 @@ public class Slot : MonoBehaviour, IDropHandler
     public int type = 0;
     public int child_index = 0;
     public Font font;
+    public string ID;
+    public Color[] colors;
     public GameObject item
     {
         get
@@ -26,173 +28,152 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (!item)
         {
-            float height = 0;
             DragHandler.item.transform.SetParent(transform);
-            if (transform.parent.tag == "SlotLayout")
+            switch (DragHandler.item.GetComponent<DragHandler>().dragID)
             {
-                if (!transform.GetChild(0).GetComponent<Text>())
-                {
-                    string text = DragHandler.item.GetComponent<DragHandler>().text;
-                    string[] texts = text.Split('#');
-                    int i;
-                    for(i = 0; i < texts.Length; i++)
-                    {
-                        GameObject go2 = new GameObject();
-                        go2.transform.SetParent(transform);
-                        go2.AddComponent<Text>();
-                        go2.GetComponent<Text>().text = texts[i];
-                        go2.GetComponent<Text>().font = font;
-                        go2.GetComponent<Text>().fontSize = 22;
-                        go2.GetComponent<Text>().color = Color.black;
-                        if (i == 0)
-                        {
-                            go2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-                            go2.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-                            go2.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-                        }
-                        else
-                        {
-                            go2.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
-                            go2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                            go2.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
-                        }
-                        go2.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 40);
-                        go2.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, 0);
-                    }
-                }
-                if (transform.childCount <= 3 && transform.parent.name == "ProgLayout")
-                {
-                    GameObject go1 = new GameObject();
-                    go1.AddComponent<Image>();
-                    go1.GetComponent<Image>().sprite = UIsprite;
-                    go1.GetComponent<Image>().type = Image.Type.Sliced;
-                    go1.transform.tag = "SlotLayout";
-                    go1.AddComponent<Slot>();
-                    go1.GetComponent<Slot>().UIsprite = UIsprite;
-                    go1.GetComponent<Slot>().font = font;
-                    go1.transform.SetParent(transform.parent);
-                    go1.AddComponent<LayoutElement>();
-                    go1.GetComponent<LayoutElement>().minHeight = 40;
-                    GetComponent<LayoutElement>().minHeight += 60;
-                }
-                else
-                {
-                    GameObject go = new GameObject();
-                    go.AddComponent<Image>();
-                    go.GetComponent<Image>().sprite = UIsprite;
-                    go.GetComponent<Image>().type = Image.Type.Sliced;
-                    go.transform.SetParent(transform.parent);
-                    go.transform.tag = "SlotLayout";
-                    go.AddComponent<Slot>();
-                    go.GetComponent<Slot>().UIsprite = UIsprite;
-                    go.GetComponent<Slot>().child_index = GetComponent<Slot>().child_index + 1;
-                    go.GetComponent<Slot>().font = font;
-                    go.GetComponent<Slot>().type = 1;
-                    go.AddComponent<LayoutElement>();
-                    go.GetComponent<LayoutElement>().minHeight = 40;
-                    go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-                    go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                    go.GetComponent<RectTransform>().localPosition = new Vector3(0, 25, 0);
-                    go.GetComponent<RectTransform>().sizeDelta = new Vector2(GetComponent<RectTransform>().sizeDelta.x, 40);
-                    go.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
-                    go.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
-                    height = go.GetComponent<RectTransform>().sizeDelta.y;
-                }
-                if (GetComponent<Slot>().child_index < 6 && !GetComponent<Slot>().used)
-                {
-                    if (GetComponent<Slot>().type == 0)
-                    {
-                        GameObject go = new GameObject();
-                        go.AddComponent<Image>();
-                        go.GetComponent<Image>().sprite = UIsprite;
-                        go.GetComponent<Image>().type = Image.Type.Sliced;
-                        go.transform.SetParent(transform);
-                        go.transform.tag = "SlotLayout";
-                        go.AddComponent<Slot>();
-                        go.GetComponent<Slot>().UIsprite = UIsprite;
-                        go.GetComponent<Slot>().child_index = GetComponent<Slot>().child_index + 1;
-                        go.GetComponent<Slot>().font = font;
-                        go.AddComponent<LayoutElement>();
-                        go.GetComponent<LayoutElement>().minHeight = 40;
-                        go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-                        go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                        go.GetComponent<RectTransform>().localPosition = new Vector3(0, -80, 0);
-                        go.GetComponent<RectTransform>().sizeDelta = new Vector2(GetComponent<RectTransform>().sizeDelta.x - 10, 60);
-                        go.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
-                        go.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
-                        GetComponent<Slot>().used = true;
-                        Transform transf = go.transform.parent;
-                        while (transf.name != "ProgLayout")
-                        {
-                            if (transf.GetComponent<Slot>().type == 1)
-                            {
-                                transf.GetComponent<RectTransform>().localPosition += new Vector3(0, (go.GetComponent<RectTransform>().sizeDelta.y + height) , 0);
-                                transf.GetChild(2).GetComponent<RectTransform>().localPosition += new Vector3(0, (go.GetComponent<RectTransform>().sizeDelta.y + height + 15) , 0);
-                                if(transf.GetChild(2).GetComponent<Slot>().child_index == 3) transf.GetChild(2).GetComponent<RectTransform>().localPosition += new Vector3(0, 25, 0);
-                            }
-                            if (transf.parent.name == "ProgLayout") transf.GetComponent<LayoutElement>().minHeight += go.GetComponent<RectTransform>().sizeDelta.y + height;
-                            else
-                            {
-                                transf.GetComponent<RectTransform>().localPosition += new Vector3(0, -(go.GetComponent<RectTransform>().sizeDelta.y + height) / 2, 0);
-                                transf.GetComponent<RectTransform>().sizeDelta += new Vector2(0, go.GetComponent<RectTransform>().sizeDelta.y + height);
-                            }
-                            transf = transf.parent;
-                        }
-                    }
-                    else if(GetComponent<Slot>().type == 1)
-                    {
-                        GameObject go = new GameObject();
-                        go.AddComponent<Image>();
-                        go.GetComponent<Image>().sprite = UIsprite;
-                        go.GetComponent<Image>().type = Image.Type.Sliced;
-                        go.transform.SetParent(transform);
-                        go.transform.tag = "SlotLayout";
-                        go.AddComponent<Slot>();
-                        go.GetComponent<Slot>().UIsprite = UIsprite;
-                        go.GetComponent<Slot>().child_index = GetComponent<Slot>().child_index;
-                        go.GetComponent<Slot>().font = font;
-                        go.AddComponent<LayoutElement>();
-                        go.GetComponent<LayoutElement>().minHeight = 40;
-                        go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-                        go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                        go.GetComponent<RectTransform>().localPosition = new Vector3(0, 60, 0);
-                        go.GetComponent<RectTransform>().sizeDelta = new Vector2(GetComponent<RectTransform>().sizeDelta.x - 10, 60);
-                        go.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
-                        go.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
-                        GetComponent<Slot>().used = true;
-                        Transform transf = go.transform.parent;
-                        bool parent_used = false;
-                        if (transform.parent.GetChild(2).GetChild(0)) parent_used = true;
-                        while (transf.name != "ProgLayout")
-                        {
-                            if(transf.GetComponent<Slot>().type == 1)
-                            {
-                                if (parent_used && transf != go.transform.parent)
-                                {
-                                    transf.GetComponent<RectTransform>().localPosition += new Vector3(0, 0, 0);
-                                    transf.GetChild(2).GetComponent<RectTransform>().localPosition += new Vector3(0, 60, 0);
-                                    if (transf.GetChild(2).GetComponent<Slot>().child_index == 3) transf.GetChild(2).GetComponent<RectTransform>().localPosition += new Vector3(0, 15, 0);
-                                }
-                                foreach (Transform child in transf.transform.parent)
-                                {
-                                    if (child.GetComponent<Slot>() && child.GetComponent<Slot>().type == 1 && child.gameObject != transf.gameObject && child.GetComponent<RectTransform>().sizeDelta.y > 50) child.GetComponent<RectTransform>().localPosition += new Vector3(0, 2*go.GetComponent<RectTransform>().sizeDelta.y + height/2, 0);
-                                }
-                            }
-                            if (transf.parent.name == "ProgLayout") transf.GetComponent<LayoutElement>().minHeight += go.GetComponent<RectTransform>().sizeDelta.y + 2*height;
-                            else
-                            {
-                                transf.GetComponent<RectTransform>().localPosition += new Vector3(0, height + (go.GetComponent<RectTransform>().sizeDelta.y + height)/2, 0);
-                                transf.GetComponent<RectTransform>().sizeDelta += new Vector2(0, go.GetComponent<RectTransform>().sizeDelta.y + height);
-                            }
-                            transf = transf.parent;
-                        }
-                    }
-                }
+                case "if":
+                    CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
+                    break;
+                case "elsif":
+                    if(transform.childCount > 1) if(transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
+                    break;
+                case "else":
+                    if(transform.childCount > 1) if(transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text,false,2);
+                    break;
+                case "while":
+                    CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
+                    break;
+                default:
+                    break;
             }
         }
     }
     #endregion
 
+    public void CreateBox(string boxText, bool cond, int slotCount)
+    {
+        float contentSize = 0;
+        int i;
+        for(i = 0; i < GameObject.Find("ProgLayout").transform.childCount; i++)
+        {
+            contentSize += GameObject.Find("ProgLayout").transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y;
+        }
+        GameObject.Find("ProgContent").GetComponent<RectTransform>().sizeDelta = new Vector2(GameObject.Find("ProgContent").GetComponent<RectTransform>().sizeDelta.x, contentSize + 90);
+        if (transform.tag == "SlotLayout")
+        {
+            GameObject par = new GameObject();
+            par.transform.SetParent(transform);
+            par.transform.name = "parent";
+            par.AddComponent<RectTransform>();
+            par.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            par.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            par.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            par.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            par.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
 
+            GetComponent<Slot>().used = true;
+            GameObject go = new GameObject();
+            go.transform.SetParent(par.transform);
+            go.transform.name = "content_slot";
+            go.AddComponent<Image>();
+            go.GetComponent<Image>().sprite = UIsprite;
+            go.GetComponent<Image>().type = Image.Type.Sliced;
+            go.transform.tag = "SlotLayout";
+            go.AddComponent<Slot>();
+            go.GetComponent<Slot>().UIsprite = UIsprite;
+            go.GetComponent<Slot>().child_index = GetComponent<Slot>().child_index + 1;
+            go.GetComponent<Slot>().colors = colors;
+            go.GetComponent<Slot>().ID = DragHandler.item.GetComponent<DragHandler>().dragID;
+            go.GetComponent<Slot>().font = font;
+            if (go.GetComponent<Slot>().child_index - 1 <= 6)
+            {
+                go.GetComponent<Image>().color = colors[go.GetComponent<Slot>().child_index - 1];
+            }
+            else
+            {
+                go.GetComponent<Image>().color = Color.white;
+            }
+            go.AddComponent<LayoutElement>();
+            go.GetComponent<LayoutElement>().minHeight = 40;
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -80);
+            go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            Transform transf = go.transform.parent;
 
+            while (transf.name != "ProgLayout")
+            {
+                if (transf.parent.name == "ProgLayout")
+                {
+                    transf.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 80);
+                    transf.GetComponent<RectTransform>().anchoredPosition += new Vector2(0, -40);
+                }
+                transf = transf.parent;
+            }
+            GameObject go3 = new GameObject();
+            go3.transform.SetParent(par.transform);
+            go3.transform.name = "condition_parent";
+            go3.AddComponent<HorizontalLayoutGroup>();
+            go3.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, 30);
+            go3.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            go3.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go3.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go3.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -20);
+            if (cond)
+            {
+                GameObject go1 = new GameObject();
+                go1.transform.SetParent(go3.transform);
+                go1.transform.name = "condition_slot";
+                go1.AddComponent<Button>();
+                go1.AddComponent<Image>();
+                go1.GetComponent<Image>().sprite = UIsprite;
+                go1.GetComponent<Image>().type = Image.Type.Sliced;
+                go1.GetComponent<Button>().targetGraphic = go1.GetComponent<Image>();
+                GameObject go4 = new GameObject();
+                go4.transform.SetParent(go1.transform);
+                go4.transform.name = "condition_text";
+                go4.AddComponent<Text>();
+                go4.GetComponent<Text>().text = "Condition";
+                go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-6, 0);
+                go4.GetComponent<Text>().font = font;
+                go4.GetComponent<Text>().color = Color.black;
+                go4.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                go4.GetComponent<Text>().resizeTextForBestFit = true;
+
+                go1.AddComponent<LayoutElement>();
+                go1.GetComponent<LayoutElement>().minHeight = 30;
+                go1.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 30);
+                go1.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
+                go1.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+                go1.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go1.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -20);
+            }
+            string[] texts = DragHandler.item.GetComponent<DragHandler>().text.Split('#');
+            for (i = 0; i < texts.Length; i++)
+            {
+                GameObject go2 = new GameObject();
+                go2.transform.SetParent(go3.transform);
+                go2.transform.name = "text";
+                if (i == 0) go2.transform.SetAsFirstSibling();
+                go2.AddComponent<Text>();
+                go2.GetComponent<Text>().text = texts[i];
+                go2.GetComponent<Text>().font = font;
+                go2.GetComponent<Text>().color = Color.black;
+                go2.AddComponent<LayoutElement>();
+                go2.GetComponent<LayoutElement>().minHeight = 30;
+                go2.GetComponent<RectTransform>().pivot = new Vector2(i, 1);
+                go2.GetComponent<RectTransform>().anchorMin = new Vector2(i, 1);
+                go2.GetComponent<RectTransform>().anchorMax = new Vector2(i, 1);
+                go2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                go2.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 30);
+                go2.GetComponent<Text>().resizeTextForBestFit = true;
+            }
+        }
+    }
 }
