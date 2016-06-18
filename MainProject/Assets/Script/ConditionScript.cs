@@ -6,6 +6,7 @@ public class ConditionScript : MonoBehaviour
 {
 
     public string toolId;
+    public int order;
     private string conditionTag;
     private GameObject condition;
     private List<GameObject> conditionList;
@@ -29,7 +30,6 @@ public class ConditionScript : MonoBehaviour
                 return valueBool;
             case "2": // neige
                 valueInt = int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[2]);
-                Debug.Log(valueInt);
                 return interpretInt(valueInt, conditionList[1], conditionList[2]);
             default:
                 break;

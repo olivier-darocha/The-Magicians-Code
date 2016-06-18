@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using UnityStandardAssets.Characters.FirstPerson;
+
 
 public class InteractionGlass : MonoBehaviour
 {
@@ -10,7 +9,6 @@ public class InteractionGlass : MonoBehaviour
     private GameObject particles;
     public static float quantity;
     public static bool overflow;
-    public static int toolUsed; // 0 = if, 1 = while, etc...
     private string[] modeNames; // paramètres de remplissage
     public static int fillMode; // mode de remplissage
     public static bool allowEmpty;
@@ -18,7 +16,6 @@ public class InteractionGlass : MonoBehaviour
 
     void Start()
     {
-        quantity = 0;
         modeNames = new string[3];
         modeNames[0] = "Water" + 1.ToString();
         modeNames[1] = "Water" + 2.ToString();
@@ -33,8 +30,9 @@ public class InteractionGlass : MonoBehaviour
 
     void Update()
     {
-        quantity = water.GetComponent<RectTransform>().localScale.y;
+
         GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[0] = translateQuantity(quantity);
+        
 
     }
 
@@ -43,7 +41,8 @@ public class InteractionGlass : MonoBehaviour
         if (allowFill)
         {
             resetAllTriggers();
-            switch (toolUsed)
+            fill(fillMode);
+            /*switch (toolUsed)
             {
                 case 0: //if
                     ifFillMode(fillMode);
@@ -51,26 +50,32 @@ public class InteractionGlass : MonoBehaviour
                 case 3: // while
                     whileFillMode(fillMode);
                     break;
-            }
+            }*/
         }
         yield return null;
     }
 
-    public void ifFillMode(int mode)
+    public void fill(int mode)
     {
+        Debug.Log(quantity);
         switch (mode)
         {
 
             case 0: // état non-remplissage
+                quantity = 0;
+                
                 break;
             case 1:
+                quantity = (1f/3f);
+                
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
                 break;
             case 2:
+                quantity = (2f/3f);
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
-
                 break;
             case 3:
+                quantity = 1;
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[2]);
                 break;
             case 4:
@@ -107,11 +112,13 @@ public class InteractionGlass : MonoBehaviour
                     particles.GetComponent<ParticleSystem>().Play();
                     break;
             }
+            i++;
         }
     }
 
     public void emptyGlass()
     {
+        quantity = 0;
         if (water.GetComponent<RectTransform>().localScale.y > 0)
         {
             resetAllTriggers();
@@ -126,14 +133,13 @@ public class InteractionGlass : MonoBehaviour
     {
         if (q == 0)
             return "0";
-        else if (q < 0.4)
+        else if (q == 1f/3f)
             return "1/3";
-        else if (q < 0.7)
+        else if (q == 2f/3f)
             return "2/3";
-        else if (q <= 1)
+        else if (q == 1)
             return "3/3";
-
-        return "error";
+        return q.ToString();
     }
 
     void resetAllTriggers()
