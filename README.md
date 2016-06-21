@@ -1,4 +1,4 @@
-# The-Coder-Scrolls
+# The Magician's Code
 ## Jeu vidéo pédagogique pour l’apprentissage de la programmation.
 
 Notre projet consiste en la conception d'un jeu vidéo en 3D permettant **l’apprentissage** de la programmation, notamment aux enfants. Le jeu constitue une introduction ludique aux principes de la programmation, à différents niveaux de détail et de technique au gré de l'avancement et de l'intérêt du joueur.
@@ -36,6 +36,8 @@ Cette fenêtre est composée de différents éléments concernant cet objet :
 
 Il y a bien longtemps, un mage s'adressa à la foule de son village.
 Il prétendit que chaque parcelle de matière et chaque objet pouvaient s'animer et agir d'eux-mêmes, si l'homme leur donnait une mission précise.
+
 La découverte du mage transforma le village. Chacun donnait vie à son foyer, à sa terre.
 Nul ne sait comment le pire est arrivé. Un villageois a-t-il perdu le contrôle de ses créations, ou les a-t-il utilisées pour nuire aux autres ?
-Le mage fut banni. Peu après, le village entier prit le chemin de l'exode.
+
+Le mage fut banni.
