@@ -52,5 +52,19 @@ public class InteractionPie : MonoBehaviour {
             pie.SetActive(false);
         }
     }
+
+    public void bake()
+    {
+        if (doughState && (appleQuantity >= 3 && appleQuantity < 6))
+        {
+            pieState = true;
+            radioactivePieState = false;
+        }
+        else if (!doughState)
+        {
+            pieState = false;
+            radioactivePieState = true;
+        }
+    }
     
 }

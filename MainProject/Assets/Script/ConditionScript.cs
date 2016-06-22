@@ -16,7 +16,6 @@ public class ConditionScript : MonoBehaviour
         conditionList = getConditions();
 
         int conditionListCount = conditionList.Count;
-        
         switch (conditionList[0].GetComponent<VariableId>().varId)
         {
             case "6": // eau
@@ -29,7 +28,6 @@ public class ConditionScript : MonoBehaviour
                 else
                     return interpretFloat(InteractionGlass.quantity, conditionList[1], conditionList[2]);
             case "4": // chauffage/feu
-                Debug.Log(conditionList[2].GetComponent<Value>().valueBool);
                 return interpretBool(InteractionHeater.fireState, conditionList[2].GetComponent<Value>().valueBool);
             case "5": // neige
                 return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[2]), conditionList[1], conditionList[2]);

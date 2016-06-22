@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Slot : MonoBehaviour, IDropHandler
 {
-    private GameObject interpreterParent;
+    public static GameObject interpreterParent;
     public int dropNumber;
     public Sprite UIsprite;
     public Sprite Closesprite;
@@ -28,6 +28,25 @@ public class Slot : MonoBehaviour, IDropHandler
             return null;
         }
     }
+
+    void Start()
+    {
+        switch (GameObject.Find("Label").GetComponent<Text>().text)
+        {
+            case "Cuisiner":
+                interpreterParent = GameObject.Find("Food");
+                break;
+            case "Remplir":
+                interpreterParent = GameObject.Find("Water");
+                break;
+            case "Chauffer":
+                interpreterParent = GameObject.Find("Heat");
+                break;
+
+        }
+        
+    }
+
     #region IdropHandler implementation
     public void OnDrop(PointerEventData eventData)
     {
@@ -317,7 +336,7 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
                 GameObject a = null;
-                foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
                 {
                     if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                 }
@@ -339,7 +358,7 @@ public class Slot : MonoBehaviour, IDropHandler
             //code Interpreter
             GameObject var = new GameObject("var");
             GameObject temp = null;
-            foreach(ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            foreach(ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
             {
                 if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
             }
@@ -355,7 +374,7 @@ public class Slot : MonoBehaviour, IDropHandler
         // code Interpreter
         GameObject value = new GameObject("value");
         GameObject temp = null;
-        foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+        foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
         {
             if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
         }
@@ -438,7 +457,7 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     GameObject a = null;
-                    foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                    foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
                     {
                         if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                     }
@@ -515,7 +534,7 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     GameObject a = null;
-                    foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                    foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
                     {
                         if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                     }
@@ -580,7 +599,7 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
                 GameObject a = null;
-                foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
                 {
                     if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                 }
@@ -603,7 +622,7 @@ public class Slot : MonoBehaviour, IDropHandler
             //code Interpreter
             GameObject sign = new GameObject("sign");
             GameObject temp = null;
-            foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
             {
                 if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
             }
@@ -691,14 +710,14 @@ public class Slot : MonoBehaviour, IDropHandler
             //code Interpreter
             GameObject func = new GameObject("func");
             GameObject t = null;
-            foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
             {
                 if (y.order == GetComponent<Slot>().dropNumber) t = y.gameObject;
             }
             if (var2.transform.parent.parent.gameObject.GetComponent<Slot>().child_index == 0)
             {
                 func.tag = "freeFunc";
-                func.transform.SetParent(GameObject.Find("Interpreter").transform);
+                func.transform.SetParent(interpreterParent.transform);
                 func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
                 func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;
             }
@@ -716,7 +735,6 @@ public class Slot : MonoBehaviour, IDropHandler
     void createTool(GameObject obj)
     {
         string id = obj.GetComponent<Slot>().ID;
-        interpreterParent = GameObject.Find("Interpreter");
 
         GameObject tool = new GameObject();
         tool.tag = "tools";
@@ -764,7 +782,7 @@ public class Slot : MonoBehaviour, IDropHandler
     GameObject findParent(int numId)
     {
         GameObject parent = null;
-        GameObject o = GameObject.Find("Interpreter");
+        GameObject o = interpreterParent;
         List<GameObject> childList = new List<GameObject>(o.transform.childCount);
         foreach (Transform child in o.transform)
         {

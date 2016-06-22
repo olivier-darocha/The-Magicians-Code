@@ -31,6 +31,11 @@ public class InteractionHeater : MonoBehaviour
         logs = getLogsInScene();
     }
 
+
+    void Update()
+    {
+        Debug.Log(fireState);
+    }
     public IEnumerator addLog()
     {
         int i = 250;

@@ -10,6 +10,7 @@ public class BetterInterpreter : MonoBehaviour
     public string toolTag;
     public string conditionTag;
     public string functionTag;
+    private GameObject parent;
     private GameObject use_glass;
     private GameObject use_heater;
 
@@ -19,9 +20,24 @@ public class BetterInterpreter : MonoBehaviour
         use_glass = GameObject.Find("Use_Glass");
         use_heater = GameObject.Find("House_Heater");
     }
+
+    public void defineParent(string name)
+    {
+        parent = GameObject.Find(name);
+    }
+
     List<GameObject> getToolsInProgramList()
     {
-        List<GameObject> temp = GameObject.FindGameObjectsWithTag(toolTag).ToList();
+        List<GameObject> temp = new List<GameObject>();
+        Debug.Log(parent.name);
+        foreach (Transform o in parent.transform)
+        {
+            if (o.gameObject.tag.Equals(toolTag))
+            {
+                temp.Add(o.gameObject);
+            }
+
+        }
         temp.AddRange(GameObject.FindGameObjectsWithTag("freeFunc"));
         SortedDictionary<int, GameObject> dic = new SortedDictionary<int, GameObject>();
         foreach(GameObject o in temp)
@@ -93,10 +109,6 @@ public class BetterInterpreter : MonoBehaviour
                     case "18": // ajouter pommes
                         addApple();
                         break;
-                    case "22": // cuire
-                        Debug.Log("aa");
-                        cook();
-                        break;
                     default:
                         break;
                 }
@@ -145,10 +157,6 @@ public class BetterInterpreter : MonoBehaviour
                                         break;
                                     case "18": // ajouter pommes
                                         addApple();
-                                        break;
-                                    case "22": // cuire
-                                        Debug.Log("aa");
-                                        cook();
                                         break;
                                     default:
                                         break;
@@ -202,10 +210,6 @@ public class BetterInterpreter : MonoBehaviour
                                 case "18": // ajouter pommes
                                     addApple();
                                     break;
-                                case "22": // cuire
-                                    Debug.Log("aa");
-                                    cook();
-                                    break;
                                 default:
                                     break;
                             }
@@ -253,10 +257,6 @@ public class BetterInterpreter : MonoBehaviour
                                         break;
                                     case "18": // ajouter pommes
                                         addApple();
-                                        break;
-                                    case "22": // cuire
-                                        Debug.Log("aa");
-                                        cook();
                                         break;
                                     default:
                                         break;
@@ -307,17 +307,4 @@ public class BetterInterpreter : MonoBehaviour
         InteractionPie.appleQuantity++;
     }
 
-    void cook()
-    {
-        if(InteractionPie.doughState && (InteractionPie.appleQuantity >= 3 && InteractionPie.appleQuantity < 6))
-        {
-            InteractionPie.pieState = true;
-            InteractionPie.radioactivePieState = false;
-        }
-        else if (!InteractionPie.doughState)
-        {
-            InteractionPie.pieState = false;
-            InteractionPie.radioactivePieState = true;
-        }
-    }
 }
