@@ -14,13 +14,17 @@ public class InteractionHeater : MonoBehaviour
     public static int triggerNum;
     public static bool fireState;
 
+
     void Start()
     {
+
         fireState = false;
         triggerNum = 0;
         triggers = triggersInit();
-        fire = Initializer.fireInHeater;
-        logsInFire = Initializer.logsInHeater;
+        fire = GameObject.Find("Fire");
+        logsInFire = GameObject.Find("Logs_fire");
+        fire.SetActive(false);
+        logsInFire.SetActive(false);
         snow = GameObject.Find("snow");
         heater = GameObject.Find("Chauffage");
         logNum = 0;

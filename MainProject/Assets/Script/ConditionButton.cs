@@ -13,7 +13,7 @@ public class ConditionButton : MonoBehaviour {
     public Sprite Checksprite;
     public GameObject cond;
 
-    public void Clicked(GameObject cond_slot) {
+    public void Clicked(GameObject cond_slot, GameObject parent_slot) {
         if (cond_slot.transform.childCount > 1 && !cond_slot.transform.GetChild(1).gameObject.activeSelf)
         {
             cond_slot.transform.GetChild(1).gameObject.SetActive(true);
@@ -58,6 +58,7 @@ public class ConditionButton : MonoBehaviour {
             go.GetComponent<Slot>().UIsprite = UIsprite;
             go.GetComponent<Slot>().Closesprite = Closesprite;
             go.GetComponent<Slot>().Checksprite = Checksprite;
+            go.GetComponent<Slot>().dropNumber = parent_slot.GetComponent<Slot>().dropNumber;
             go.GetComponent<Slot>().font = font;
             go.GetComponent<Slot>().type = 1;
             go.GetComponent<RectTransform>().localPosition = new Vector3(0, 150, 0);
@@ -74,6 +75,7 @@ public class ConditionButton : MonoBehaviour {
             go2.GetComponent<Slot>().UIsprite = UIsprite;
             go2.GetComponent<Slot>().Closesprite = Closesprite;
             go2.GetComponent<Slot>().Checksprite = Checksprite;
+            go2.GetComponent<Slot>().dropNumber = parent_slot.GetComponent<Slot>().dropNumber;
             go2.GetComponent<Slot>().font = font;
             go2.GetComponent<Slot>().type = 2;
             go2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
@@ -90,6 +92,7 @@ public class ConditionButton : MonoBehaviour {
             go3.GetComponent<Slot>().UIsprite = UIsprite;
             go3.GetComponent<Slot>().Closesprite = Closesprite;
             go3.GetComponent<Slot>().Checksprite = Checksprite;
+            go3.GetComponent<Slot>().dropNumber = parent_slot.GetComponent<Slot>().dropNumber;
             go3.GetComponent<Slot>().font = font;
             go3.GetComponent<Slot>().type = 1;
             go3.GetComponent<RectTransform>().localPosition = new Vector3(0, -150, 0);
@@ -126,6 +129,7 @@ public class ConditionButton : MonoBehaviour {
 
     public void Close(GameObject go)
     {
+
         go.transform.SetParent(cond.transform);
         go.SetActive(false);
     }

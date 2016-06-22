@@ -6,7 +6,7 @@ using System;
 
 public class GameplayMenuSetup : MonoBehaviour
 {
-
+    public static int orderCount = 0;
     public static bool interfaceUseActive;
     public static bool interfaceProgramActive;
     private bool inputE;
@@ -17,6 +17,7 @@ public class GameplayMenuSetup : MonoBehaviour
     private GameObject overlayProgram;
     private GameObject storedObject;
     public static bool overlayActive;
+    private Ray ray;
 
     //Interacting
 
@@ -67,10 +68,16 @@ public class GameplayMenuSetup : MonoBehaviour
         {
             inputE = Input.GetKeyUp(KeyCode.E);
             inputA = Input.GetKeyUp(KeyCode.A);
-            if (Physics.Raycast(RaycastShowInfo.ray, out RaycastShowInfo.hit, 3) && RaycastShowInfo.hit.collider.gameObject.tag == "Programmable")
+
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 3) && hit.collider.gameObject.tag == "Programmable")
             {
-                if (storedObject != RaycastShowInfo.hit.collider.gameObject)
-                    storedObject = RaycastShowInfo.hit.collider.gameObject;
+                if (storedObject != hit.collider.gameObject)
+                    storedObject = hit.collider.gameObject;
+                //Debug.Log(hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName);
+                GameObject.Find("Object_aimed").GetComponent<Text>().text = hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName;
 
                 if (interfaceUseActive || interfaceProgramActive)
                     overlayActive = false;
@@ -114,20 +121,24 @@ public class GameplayMenuSetup : MonoBehaviour
 
     void panelsInit()
     {
-        panels = new GameObject[2];
+        panels = new GameObject[3];
         panels[0] = GameObject.Find("Use_Glass");
         panels[1] = GameObject.Find("Use_Heater");
+        panels[2] = GameObject.Find("Use_Plate");
     }
     void selectInteractionWindow()
     {
         
         switch (interactedObject.name)
         {
-            case "Final_glass_water":
+            case "glass":
                 panelId = 0;
                 break;
             case "Chauffage":
                 panelId = 1;
+                break;
+            case "plateInfo":
+                panelId = 2;
                 break;
             default:
                 break;
@@ -283,6 +294,7 @@ public class GameplayMenuSetup : MonoBehaviour
                     var2.transform.GetChild(0).GetComponent<DragHandler>().DragWindow = GameObject.Find("DragWindow");
                     var2.transform.GetChild(0).GetComponent<DragHandler>().type = 1;
                     var2.transform.GetChild(0).GetComponent<DragHandler>().dragID = "var";
+                    var2.transform.GetChild(0).GetComponent<DragHandler>().varDragId =  getId(var.transform.name);
                     var2.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = variables.GetComponent<VariablesInfo>().VariablesSprite[i];
                     var2.GetComponent<Image>().color = new Color(0, 0, 0, 0.5f);
                     var2.transform.GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0);
@@ -460,5 +472,31 @@ public class GameplayMenuSetup : MonoBehaviour
             }
         }
         BAO.SetActive(set);
+    }
+
+    int getId(string name)
+    {
+        switch (name)
+        {
+            case "Chauffage":
+                return 4;
+            case "Neige":
+                return 5;
+            case "Verre":
+                return 6;
+            case "Tarte":
+                return 7;
+            case "Pomme":
+                return 8;
+            case "Farine":
+                return 9;
+            case "Beurre":
+                return 10;
+            case "Lait":
+                return 11;
+            default:
+                return 0;
+
+        }
     }
 }

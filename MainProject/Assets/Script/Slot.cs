@@ -2,9 +2,12 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
 public class Slot : MonoBehaviour, IDropHandler
 {
+    private GameObject interpreterParent;
+    public int dropNumber;
     public Sprite UIsprite;
     public Sprite Closesprite;
     public Sprite Checksprite;
@@ -126,6 +129,7 @@ public class Slot : MonoBehaviour, IDropHandler
             go.GetComponent<Slot>().colors = colors;
             go.GetComponent<Slot>().ID = DragHandler.item.GetComponent<DragHandler>().dragID;
             go.GetComponent<Slot>().font = font;
+            go.GetComponent<Slot>().dropNumber = GameplayMenuSetup.orderCount; // pour Interpreter
             if (go.GetComponent<Slot>().child_index - 1 <= 6)
             {
                 go.GetComponent<Image>().color = colors[go.GetComponent<Slot>().child_index - 1];
@@ -176,7 +180,7 @@ public class Slot : MonoBehaviour, IDropHandler
                 go1.GetComponent<Image>().sprite = UIsprite;
                 go1.GetComponent<Image>().type = Image.Type.Sliced;
                 go1.GetComponent<Button>().targetGraphic = go1.GetComponent<Image>();
-                go1.GetComponent<Button>().onClick.AddListener(() => go1.GetComponent<ConditionButton>().Clicked(go1));
+                go1.GetComponent<Button>().onClick.AddListener(() => go1.GetComponent<ConditionButton>().Clicked(go1,go));
                 GameObject go4 = new GameObject();
                 go4.transform.SetParent(go1.transform);
                 go4.transform.name = "condition_text";
@@ -222,6 +226,12 @@ public class Slot : MonoBehaviour, IDropHandler
                 go2.GetComponent<Text>().resizeTextForBestFit = true;
             }
 
+
+            // code pour Interpreter
+            createTool(go);
+            GameplayMenuSetup.orderCount++;
+
+
             GameObject go5 = new GameObject();
             go5.transform.SetParent(par.transform);
             go5.transform.name = "button";
@@ -254,7 +264,16 @@ public class Slot : MonoBehaviour, IDropHandler
 
     public void Close(GameObject parent)
     {
+        
         parent.transform.parent.GetComponent<Slot>().used = false;
+        
+        foreach (ConditionScript o in interpreterParent.transform.GetComponentsInChildren<ConditionScript>())
+        {
+            if (o.order == parent.transform.GetChild(0).GetComponent<Slot>().dropNumber)
+            {
+                Destroy(o.gameObject);
+            }
+        }
         Destroy(parent);
     }
 
@@ -297,6 +316,15 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
+                GameObject a = null;
+                foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                {
+                    if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
+                }
+                foreach (Transform o in a.transform)
+                {
+                    if (o.gameObject.name == "var") Destroy(o.gameObject);
+                }
                 var2.transform.parent.GetComponent<Slot>().used = false;
                 Destroy(var2);
                 Destroy(go5);
@@ -307,11 +335,33 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
             go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
+            //code Interpreter
+            GameObject var = new GameObject("var");
+            GameObject temp = null;
+            foreach(ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            {
+                if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
+            }
+            var.transform.SetParent(temp.transform.GetChild(0));
+            var.AddComponent<VariableId>().varId = var2.GetComponent<DragHandler>().varDragId.ToString();
         }
     }
 
     public void PlaceVariableToAssign()
     {
+
+        // code Interpreter
+        GameObject value = new GameObject("value");
+        GameObject temp = null;
+        foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+        {
+            if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
+        }
+        value.transform.SetParent(temp.transform.GetChild(0));
+        value.AddComponent<Value>();
+
+
         if (type == 1 && !GetComponent<Slot>().used)
         {
             if (DragHandler.item.transform.GetChild(0).GetComponent<Image>().sprite.name != "bool")
@@ -324,14 +374,8 @@ public class Slot : MonoBehaviour, IDropHandler
                 {
                     var2.GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
                 }
-                var2.GetComponent<InputField>().onValueChanged.AddListener(delegate
-                {
-                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = false;
-                });
-                var2.GetComponent<InputField>().onEndEdit.AddListener(delegate
-                {
-                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = true;
-                });
+
+
                 GameObject text2 = new GameObject();
                 text2.transform.SetParent(var2.transform);
                 text2.AddComponent<Text>();
@@ -353,6 +397,21 @@ public class Slot : MonoBehaviour, IDropHandler
                 var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
                 var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 var2.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
+
+                var2.GetComponent<InputField>().onValueChanged.AddListener(delegate
+                {
+                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = false;
+                });
+
+                var2.GetComponent<InputField>().onEndEdit.AddListener(delegate
+                {
+                    // interpreter
+                    if (var2.GetComponent<InputField>().characterValidation == InputField.CharacterValidation.Decimal)
+                    {
+                        value.GetComponent<Value>().valueFloat = float.Parse(text2.GetComponent<Text>().text);
+                    }
+                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = true;
+                });
 
                 GameObject go5 = new GameObject();
                 go5.transform.SetParent(transform);
@@ -376,6 +435,15 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
                 go4.GetComponent<Button>().onClick.AddListener(() =>
                 {
+                    GameObject a = null;
+                    foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                    {
+                        if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
+                    }
+                    foreach (Transform o in a.transform)
+                    {
+                        if (o.gameObject.name == "value") Destroy(o.gameObject);
+                    }
                     var2.transform.parent.GetComponent<Slot>().used = false;
                     Destroy(var2);
                     Destroy(go5);
@@ -386,6 +454,7 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
                 go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                 go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
             }
             else
             {
@@ -443,6 +512,15 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
                 go4.GetComponent<Button>().onClick.AddListener(() =>
                 {
+                    GameObject a = null;
+                    foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                    {
+                        if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
+                    }
+                    foreach(Transform o in a.transform)
+                    {
+                        if (o.gameObject.name == "value") Destroy(o.gameObject);
+                    }
                     var2.transform.parent.GetComponent<Slot>().used = false;
                     Destroy(var2);
                     Destroy(go5);
@@ -453,7 +531,10 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
                 go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                 go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
+                value.GetComponent<Value>().valueBool = var2.GetComponent<Toggle>().isOn;
             }
+
         }
     }
 
@@ -496,6 +577,15 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
+                GameObject a = null;
+                foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+                {
+                    if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
+                }
+                foreach (Transform o in a.transform.GetChild(0))
+                {
+                    if (o.gameObject.name == "sign") Destroy(o.gameObject);
+                }
                 var2.transform.parent.GetComponent<Slot>().used = false;
                 Destroy(var2);
                 Destroy(go5);
@@ -506,6 +596,33 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
             go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
+
+            //code Interpreter
+            GameObject sign = new GameObject("sign");
+            GameObject temp = null;
+            foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            {
+                if (y.order == GetComponent<Slot>().dropNumber) temp = y.gameObject;
+            }
+            sign.transform.SetParent(temp.transform.GetChild(0));
+            string s = "";
+            switch(var2.GetComponent<DragHandler>().varDragId)
+            {
+                case 12:
+                    s = "=";
+                    break;
+                case 13:
+                    s = "<";
+                    break;
+                case 14:
+                    s = ">";
+                    break;
+                case 15:
+                    s = "!=";
+                    break;
+            }
+            sign.AddComponent<Sign>().sign = s;
         }
     }
 
@@ -567,6 +684,81 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
             go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
+            //code Interpreter
+            GameObject func = new GameObject("func");
+            GameObject t = null;
+            foreach (ConditionScript y in GameObject.Find("Interpreter").GetComponentsInChildren<ConditionScript>())
+            {
+                if (y.order == GetComponent<Slot>().dropNumber) t = y.gameObject;
+            }
+            func.transform.SetParent(t.transform.GetChild(1));
+            func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
+            func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;
+
+
         }
     }
+
+    void createTool(GameObject obj)
+    {
+        string id = obj.GetComponent<Slot>().ID;
+        interpreterParent = GameObject.Find("Interpreter");
+
+        GameObject tool = new GameObject();
+        tool.tag = "tools";
+        tool.AddComponent<ConditionScript>();
+        tool.GetComponent<ConditionScript>().order = GameplayMenuSetup.orderCount;
+        if (child_index == 0)
+            tool.transform.SetParent(interpreterParent.transform);
+        else
+        {
+            int num = obj.transform.parent.parent.gameObject.GetComponent<Slot>().dropNumber;
+            GameObject parent = findParent(num);
+            tool.transform.SetParent(parent.transform);
+        }
+
+
+        GameObject conditions = new GameObject("conditions");
+        conditions.transform.SetParent(tool.transform);
+        conditions.tag = "condition";
+
+        GameObject functions = new GameObject("functions");
+        functions.transform.SetParent(tool.transform);
+        functions.tag = "function";
+
+        switch (id)
+        {
+            case "if":
+                tool.transform.name = "if";
+                tool.GetComponent<ConditionScript>().toolId = "0";
+                break;
+            case "else":
+                tool.name = "else";
+                tool.GetComponent<ConditionScript>().toolId = "1";
+                break;
+            case "elsif":
+                tool.name = "else if";
+                tool.GetComponent<ConditionScript>().toolId = "2";
+                break;
+            case "while":
+                tool.name = "while";
+                tool.GetComponent<ConditionScript>().toolId = "3";
+                break;
+        }
+    }
+
+    GameObject findParent(int numId)
+    {
+        GameObject parent = null;
+        GameObject o = GameObject.Find("Interpreter");
+        List<GameObject> childList = new List<GameObject>(o.transform.childCount);
+        foreach (Transform child in o.transform)
+        {
+            if (child.tag == "tools" && child.GetComponent<ConditionScript>().order == numId)
+                parent = child.gameObject;
+        }
+        return parent;
+    }
+
 }

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public int varDragId;
     public static GameObject item;    // i changed itembeigdraged to item.
     public Vector2 Size;
     public string dragID;

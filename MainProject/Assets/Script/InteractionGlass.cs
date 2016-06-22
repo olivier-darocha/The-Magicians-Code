@@ -8,7 +8,6 @@ public class InteractionGlass : MonoBehaviour
     private GameObject glassObject;
     private GameObject particles;
     public static float quantity;
-    public static bool overflow;
     private string[] modeNames; // paramètres de remplissage
     public static int fillMode; // mode de remplissage
     public static bool allowEmpty;
@@ -57,71 +56,44 @@ public class InteractionGlass : MonoBehaviour
 
     public void fill(int mode)
     {
-        Debug.Log(quantity);
         switch (mode)
         {
 
             case 0: // état non-remplissage
                 quantity = 0;
-                
                 break;
             case 1:
                 quantity = (1f/3f);
-                
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
                 break;
             case 2:
                 quantity = (2f/3f);
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
                 break;
             case 3:
                 quantity = 1;
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
                 glassObject.GetComponent<Animator>().SetTrigger(modeNames[2]);
                 break;
             case 4:
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
+                glassObject.GetComponent<Animator>().SetTrigger(modeNames[2]);
                 particles.GetComponent<ParticleSystem>().Clear();
                 particles.GetComponent<ParticleSystem>().Play();
                 break;
         }
-    }
-
-    public void whileFillMode(int mode)
-    {
-        int i = 0;
-        while (i <= mode)
-        {
-
-            switch (mode)
-            {
-                case 0: // état non-remplissage
-                    break;
-                case 1:
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
-                    break;
-                case 2:
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
-                    break;
-                case 3:
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[0]);
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[1]);
-                    glassObject.GetComponent<Animator>().SetTrigger(modeNames[2]);
-                    break;
-                case 4:
-                    particles.GetComponent<ParticleSystem>().Clear();
-                    particles.GetComponent<ParticleSystem>().Play();
-                    break;
-            }
-            i++;
-        }
-    }
+    }   
 
     public void emptyGlass()
     {
         quantity = 0;
+        resetAllTriggers();
         if (water.GetComponent<RectTransform>().localScale.y > 0)
         {
-            resetAllTriggers();
+
             glassObject.GetComponent<Animator>().SetTrigger("Drink");
             fillMode = 0;
             GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[0] = "0";

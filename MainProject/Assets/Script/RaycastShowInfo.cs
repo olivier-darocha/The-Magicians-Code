@@ -7,13 +7,13 @@ public class RaycastShowInfo : MonoBehaviour
 
     private bool notredo = false;
     public bool interacted = false;
-    public static Ray ray;
-    public static RaycastHit hit;
+    private Ray ray;
+    private RaycastHit hit;
 
     private GameObject FPSController;
     public static bool isPaused;
-    public static GameObject interactedObject;
-    
+    private GameObject interactedObject;
+
 
     void Start()
     {
@@ -30,33 +30,47 @@ public class RaycastShowInfo : MonoBehaviour
             isPaused = false;
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
 
         if (!isPaused && Physics.Raycast(ray, out hit, 3))
         {
-            if (hit.collider.gameObject.tag == "Interactable" || hit.collider.gameObject.tag == "Programmable")
+            Debug.Log(hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName);
+            interactedObject = hit.collider.gameObject;
+            if (interactedObject.tag == "Interactable")// || hit.collider.gameObject.tag == "Programmable")
             {
-                if (!interacted && hit.collider.gameObject.GetComponent<Interaction>() && Input.GetKeyDown("e"))
+
+                if (!interacted && interactedObject.GetComponent<Interaction>() && Input.GetKeyDown("e"))
                 {
-                        interacted = true;
-                        hit.collider.gameObject.GetComponent<Interaction>().Interagir();
+                    interacted = true;
+                    interactedObject.GetComponent<Interaction>().Interagir();
                 }
 
                 if (!notredo)
                 {
-                    GameObject.Find("Object_aimed").GetComponent<Text>().text = hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName;
+
+                    GameObject.Find("Object_aimed").GetComponent<Text>().text = interactedObject.GetComponent<ObjectInfo>().ObjectName;
                     notredo = true;
                 }
             }
             else
             {
+                if (interactedObject != null)
+                {
+
+                    if (interactedObject.tag != "Interactable" && interactedObject.tag != "Programmable")
+                        GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
+                }
                 GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
                 notredo = false;
             }
         }
         else
         {
-            GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
+            if (interactedObject != null)
+            {
+
+                if (interactedObject.tag != "Interactable" && interactedObject.tag != "Programmable")
+                    GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
+            }
             notredo = false;
         }
     }
