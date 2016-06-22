@@ -6,6 +6,8 @@ using System;
 public class Slot : MonoBehaviour, IDropHandler
 {
     public Sprite UIsprite;
+    public Sprite Closesprite;
+    public Sprite Checksprite;
     public bool used = false;
     public int type = 0;
     public int child_index = 0;
@@ -29,22 +31,53 @@ public class Slot : MonoBehaviour, IDropHandler
         if (!item)
         {
             DragHandler.item.transform.SetParent(transform);
-            switch (DragHandler.item.GetComponent<DragHandler>().dragID)
+            if (DragHandler.item.GetComponent<DragHandler>().type == 0)
             {
-                case "if":
-                    CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
-                    break;
-                case "elsif":
-                    if(transform.childCount > 1) if(transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
-                    break;
-                case "else":
-                    if(transform.childCount > 1) if(transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text,false,2);
-                    break;
-                case "while":
-                    CreateBox(DragHandler.item.GetComponent<DragHandler>().text,true,3);
-                    break;
-                default:
-                    break;
+                switch (DragHandler.item.GetComponent<DragHandler>().dragID)
+                {
+                    case "if":
+                        CreateBox(DragHandler.item.GetComponent<DragHandler>().text, true, 3);
+                        break;
+                    case "elsif":
+                        if (transform.childCount > 1) if (transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text, true, 3);
+                        break;
+                    case "else":
+                        if (transform.childCount > 1) if (transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>() && transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "if" || transform.GetChild(transform.childCount - 2).GetChild(0).GetComponent<Slot>().ID == "elsif") CreateBox(DragHandler.item.GetComponent<DragHandler>().text, false, 2);
+                        break;
+                    case "while":
+                        CreateBox(DragHandler.item.GetComponent<DragHandler>().text, true, 3);
+                        break;
+                    case "func":
+                        PlaceFonction();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (DragHandler.item.GetComponent<DragHandler>().type == 1)
+            {
+                switch (DragHandler.item.GetComponent<DragHandler>().dragID)
+                {
+                    case "var":
+                        PlaceVariable();
+                        break;
+                    case "var2":
+                        PlaceVariableToAssign();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (DragHandler.item.GetComponent<DragHandler>().type == 2)
+            {
+                switch (DragHandler.item.GetComponent<DragHandler>().dragID)
+                {
+                    case "comp":
+                        PlaceComp();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -59,8 +92,14 @@ public class Slot : MonoBehaviour, IDropHandler
             contentSize += GameObject.Find("ProgLayout").transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y;
         }
         GameObject.Find("ProgContent").GetComponent<RectTransform>().sizeDelta = new Vector2(GameObject.Find("ProgContent").GetComponent<RectTransform>().sizeDelta.x, contentSize + 90);
-        if (transform.tag == "SlotLayout")
+        if (transform.tag == "SlotLayout" && (transform.childCount <= 1 || child_index == 0))
         {
+            if (GameObject.Find("ProgLayout").transform.childCount > 0 && GameObject.Find("ProgLayout").transform.GetChild(0).childCount == 1 && child_index == 0)
+            {
+                GameObject.Find("ProgLayout").transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(-10, 40);
+                GameObject.Find("ProgLayout").transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -25);
+            }
+
             GameObject par = new GameObject();
             par.transform.SetParent(transform);
             par.transform.name = "parent";
@@ -81,6 +120,8 @@ public class Slot : MonoBehaviour, IDropHandler
             go.transform.tag = "SlotLayout";
             go.AddComponent<Slot>();
             go.GetComponent<Slot>().UIsprite = UIsprite;
+            go.GetComponent<Slot>().Closesprite = Closesprite;
+            go.GetComponent<Slot>().Checksprite = Checksprite;
             go.GetComponent<Slot>().child_index = GetComponent<Slot>().child_index + 1;
             go.GetComponent<Slot>().colors = colors;
             go.GetComponent<Slot>().ID = DragHandler.item.GetComponent<DragHandler>().dragID;
@@ -95,11 +136,11 @@ public class Slot : MonoBehaviour, IDropHandler
             }
             go.AddComponent<LayoutElement>();
             go.GetComponent<LayoutElement>().minHeight = 40;
-            go.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -80);
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -45);
+            go.GetComponent<RectTransform>().localPosition = new Vector3(0, -17.5f, 0);
+            go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -17.5f);
             go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
             go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-            go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
-            go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             Transform transf = go.transform.parent;
 
             while (transf.name != "ProgLayout")
@@ -126,10 +167,16 @@ public class Slot : MonoBehaviour, IDropHandler
                 go1.transform.SetParent(go3.transform);
                 go1.transform.name = "condition_slot";
                 go1.AddComponent<Button>();
+                go1.AddComponent<ConditionButton>();
+                go1.GetComponent<ConditionButton>().UIsprite = UIsprite;
+                go1.GetComponent<ConditionButton>().Closesprite = Closesprite;
+                go1.GetComponent<ConditionButton>().Checksprite = Checksprite;
+                go1.GetComponent<ConditionButton>().font = font;
                 go1.AddComponent<Image>();
                 go1.GetComponent<Image>().sprite = UIsprite;
                 go1.GetComponent<Image>().type = Image.Type.Sliced;
                 go1.GetComponent<Button>().targetGraphic = go1.GetComponent<Image>();
+                go1.GetComponent<Button>().onClick.AddListener(() => go1.GetComponent<ConditionButton>().Clicked(go1));
                 GameObject go4 = new GameObject();
                 go4.transform.SetParent(go1.transform);
                 go4.transform.name = "condition_text";
@@ -174,6 +221,352 @@ public class Slot : MonoBehaviour, IDropHandler
                 go2.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 30);
                 go2.GetComponent<Text>().resizeTextForBestFit = true;
             }
+
+            GameObject go5 = new GameObject();
+            go5.transform.SetParent(par.transform);
+            go5.transform.name = "button";
+            go5.AddComponent<Image>();
+            go5.GetComponent<Image>().sprite = UIsprite;
+            go5.GetComponent<Image>().type = Image.Type.Sliced;
+            go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+            GameObject go6 = new GameObject();
+            go6.transform.SetParent(go5.transform);
+            go6.transform.name = "close";
+            go6.AddComponent<Button>();
+            go6.AddComponent<Image>();
+            go6.GetComponent<Image>().sprite = Closesprite;
+            go6.GetComponent<Image>().type = Image.Type.Sliced;
+            go6.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+            go6.GetComponent<Button>().onClick.AddListener(() => this.Close(par));
+            go6.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go6.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            go6.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            go6.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go6.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go6.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+        }
+    }
+
+    public void Close(GameObject parent)
+    {
+        parent.transform.parent.GetComponent<Slot>().used = false;
+        Destroy(parent);
+    }
+
+    public void PlaceVariable()
+    {
+        if(type == 1 && !GetComponent<Slot>().used)
+        {
+            GetComponent<Slot>().used = true;
+            GameObject var2 = Instantiate(DragHandler.item);
+            var2.transform.SetParent(transform);
+            var2.GetComponent<DragHandler>().DragWindow = GameObject.Find("DragWindow");
+            var2.GetComponent<DragHandler>().type = 1;
+            var2.GetComponent<DragHandler>().dragID = "var";
+            var2.transform.GetChild(0).GetComponent<Image>().sprite = DragHandler.item.transform.GetChild(0).GetComponent<Image>().sprite;
+            var2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
+
+            GameObject go5 = new GameObject();
+            go5.transform.SetParent(transform);
+            go5.transform.name = "button";
+            go5.AddComponent<Image>();
+            go5.GetComponent<Image>().sprite = UIsprite;
+            go5.GetComponent<Image>().type = Image.Type.Sliced;
+            go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+            GameObject go4 = new GameObject();
+            go4.transform.SetParent(go5.transform);
+            go4.transform.name = "close";
+            go4.AddComponent<Button>();
+            go4.AddComponent<Image>();
+            go4.GetComponent<Image>().sprite = Closesprite;
+            go4.GetComponent<Image>().type = Image.Type.Sliced;
+            go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+            go4.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                var2.transform.parent.GetComponent<Slot>().used = false;
+                Destroy(var2);
+                Destroy(go5);
+            });
+            go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+        }
+    }
+
+    public void PlaceVariableToAssign()
+    {
+        if (type == 1 && !GetComponent<Slot>().used)
+        {
+            if (DragHandler.item.transform.GetChild(0).GetComponent<Image>().sprite.name != "bool")
+            {
+                GetComponent<Slot>().used = true;
+                GameObject var2 = new GameObject();
+                var2.transform.SetParent(transform);
+                var2.AddComponent<InputField>();
+                if (DragHandler.item.transform.GetChild(0).GetComponent<Image>().sprite.name == "nombre")
+                {
+                    var2.GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
+                }
+                var2.GetComponent<InputField>().onValueChanged.AddListener(delegate
+                {
+                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = false;
+                });
+                var2.GetComponent<InputField>().onEndEdit.AddListener(delegate
+                {
+                    GameObject.Find("GUI").GetComponent<GameplayMenuSetup>().enabled = true;
+                });
+                GameObject text2 = new GameObject();
+                text2.transform.SetParent(var2.transform);
+                text2.AddComponent<Text>();
+                text2.GetComponent<Text>().font = font;
+                text2.GetComponent<Text>().fontSize = 40;
+                text2.GetComponent<Text>().color = Color.black;
+                text2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                text2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                text2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                text2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                text2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                text2.GetComponent<RectTransform>().sizeDelta = new Vector2(-20, -20);
+                var2.AddComponent<Image>();
+                var2.GetComponent<Image>().sprite = UIsprite;
+                var2.GetComponent<InputField>().targetGraphic = var2.GetComponent<Image>();
+                var2.GetComponent<InputField>().textComponent = text2.GetComponent<Text>();
+                var2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                var2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                var2.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
+
+                GameObject go5 = new GameObject();
+                go5.transform.SetParent(transform);
+                go5.transform.name = "button";
+                go5.AddComponent<Image>();
+                go5.GetComponent<Image>().sprite = UIsprite;
+                go5.GetComponent<Image>().type = Image.Type.Sliced;
+                go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+                GameObject go4 = new GameObject();
+                go4.transform.SetParent(go5.transform);
+                go4.transform.name = "close";
+                go4.AddComponent<Button>();
+                go4.AddComponent<Image>();
+                go4.GetComponent<Image>().sprite = Closesprite;
+                go4.GetComponent<Image>().type = Image.Type.Sliced;
+                go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+                go4.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    var2.transform.parent.GetComponent<Slot>().used = false;
+                    Destroy(var2);
+                    Destroy(go5);
+                });
+                go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+                go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+            }
+            else
+            {
+                GetComponent<Slot>().used = true;
+                GameObject var2 = new GameObject();
+                var2.transform.SetParent(transform);
+                var2.AddComponent<Toggle>();
+                GameObject var3 = new GameObject();
+                var3.transform.SetParent(var2.transform);
+                var3.AddComponent<Image>();
+                var3.GetComponent<Image>().sprite = UIsprite;
+                var3.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+                var3.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                var3.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                var3.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                var3.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                var3.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
+                GameObject var4 = new GameObject();
+                var4.transform.SetParent(var3.transform);
+                var4.AddComponent<Image>();
+                var4.GetComponent<Image>().sprite = Checksprite;
+                var4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+                var4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                var4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                var4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                var4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                var4.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+                var2.GetComponent<Toggle>().targetGraphic = var3.GetComponent<Image>();
+                var2.GetComponent<Toggle>().graphic = var4.GetComponent<Image>();
+                var2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                var2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                var2.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
+
+                GameObject go5 = new GameObject();
+                go5.transform.SetParent(transform);
+                go5.transform.name = "button";
+                go5.AddComponent<Image>();
+                go5.GetComponent<Image>().sprite = UIsprite;
+                go5.GetComponent<Image>().type = Image.Type.Sliced;
+                go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+                GameObject go4 = new GameObject();
+                go4.transform.SetParent(go5.transform);
+                go4.transform.name = "close";
+                go4.AddComponent<Button>();
+                go4.AddComponent<Image>();
+                go4.GetComponent<Image>().sprite = Closesprite;
+                go4.GetComponent<Image>().type = Image.Type.Sliced;
+                go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+                go4.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    var2.transform.parent.GetComponent<Slot>().used = false;
+                    Destroy(var2);
+                    Destroy(go5);
+                });
+                go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+                go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+            }
+        }
+    }
+
+    public void PlaceComp()
+    {
+        if (type == 2 && !GetComponent<Slot>().used)
+        {
+            GetComponent<Slot>().used = true;
+            GameObject var2 = Instantiate(DragHandler.item);
+            var2.transform.SetParent(transform);
+            var2.GetComponent<DragHandler>().DragWindow = GameObject.Find("DragWindow");
+            var2.GetComponent<DragHandler>().type = 1;
+            var2.GetComponent<DragHandler>().dragID = "comp";
+            var2.transform.GetChild(0).GetComponent<Image>().sprite = DragHandler.item.transform.GetChild(0).GetComponent<Image>().sprite;
+            var2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+
+            GameObject go5 = new GameObject();
+            go5.transform.SetParent(transform);
+            go5.transform.name = "button";
+            go5.AddComponent<Image>();
+            go5.GetComponent<Image>().sprite = UIsprite;
+            go5.GetComponent<Image>().type = Image.Type.Sliced;
+            go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+            GameObject go4 = new GameObject();
+            go4.transform.SetParent(go5.transform);
+            go4.transform.name = "close";
+            go4.AddComponent<Button>();
+            go4.AddComponent<Image>();
+            go4.GetComponent<Image>().sprite = Closesprite;
+            go4.GetComponent<Image>().type = Image.Type.Sliced;
+            go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+            go4.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                var2.transform.parent.GetComponent<Slot>().used = false;
+                Destroy(var2);
+                Destroy(go5);
+            });
+            go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+        }
+    }
+
+    public void PlaceFonction()
+    {
+        if (type == 0 && !GetComponent<Slot>().used)
+        {
+            GetComponent<Slot>().used = true;
+
+            GameObject temp = new GameObject();
+            temp.transform.SetParent(transform);
+            temp.AddComponent<RectTransform>();
+            temp.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            temp.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            temp.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            temp.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            temp.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            GameObject var2 = Instantiate(DragHandler.item);
+            var2.transform.SetParent(temp.transform);
+            var2.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            var2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            var2.transform.GetChild(0).GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
+            var2.transform.GetChild(0).GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+            var2.transform.GetChild(0).GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            var2.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            var2.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(GetComponent<RectTransform>().rect.height, 0);
+
+            GameObject go5 = new GameObject();
+            go5.transform.SetParent(temp.transform);
+            go5.transform.name = "button";
+            go5.AddComponent<Image>();
+            go5.GetComponent<Image>().sprite = UIsprite;
+            go5.GetComponent<Image>().type = Image.Type.Sliced;
+            go5.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go5.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go5.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+
+            GameObject go4 = new GameObject();
+            go4.transform.SetParent(go5.transform);
+            go4.transform.name = "close";
+            go4.AddComponent<Button>();
+            go4.AddComponent<Image>();
+            go4.GetComponent<Image>().sprite = Closesprite;
+            go4.GetComponent<Image>().type = Image.Type.Sliced;
+            go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
+            go4.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                var2.transform.parent.parent.GetComponent<Slot>().used = false;
+                Destroy(temp);
+            });
+            go4.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go4.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
         }
     }
 }

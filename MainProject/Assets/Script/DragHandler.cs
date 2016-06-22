@@ -8,6 +8,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public static GameObject item;    // i changed itembeigdraged to item.
     public Vector2 Size;
     public string dragID;
+    public int type;
     public GameObject DragWindow;
     public string text;
     Transform startParent;
@@ -28,7 +29,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
+        transform.position = new Vector3(-GameObject.Find("GUICamera").GetComponent<Camera>().pixelWidth / 2 + GameObject.Find("GUICamera").GetComponent<Camera>().pixelWidth * Input.mousePosition.x/Screen.width, -1000 + -GameObject.Find("GUICamera").GetComponent<Camera>().pixelHeight / 2 + GameObject.Find("GUICamera").GetComponent<Camera>().pixelHeight * Input.mousePosition.y / Screen.height, 100);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -47,6 +48,11 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             go.transform.SetParent(startParent);
             go.transform.position = startPosition;
             go.GetComponent<CanvasGroup>().blocksRaycasts = true;
+            go.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            go.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
         }
         GetComponent<CanvasGroup>().blocksRaycasts = true;
         if (transform.parent != startParent) Destroy(gameObject);

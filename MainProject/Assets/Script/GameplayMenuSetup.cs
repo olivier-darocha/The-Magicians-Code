@@ -23,10 +23,14 @@ public class GameplayMenuSetup : MonoBehaviour
     private GameObject[] panels;
     private bool showPanel;
     private GameObject Dropdown;
-
+    public GameObject interactedObject;
+    private int LastUpdateDropdownValue;
 
     //Programming
     public GameObject BAO;
+    public GameObject StartSlot;
+    public GameObject Slot;
+    public Sprite UIsprite;
 
     // Use this for initialization
     void Start()
@@ -56,7 +60,7 @@ public class GameplayMenuSetup : MonoBehaviour
             interfaceProgramActive = false;
             pauseSwitch(true);
             hideInteraction();
-            BAO.SetActive(false);
+            CloseBAO(false);
         }
 
         else
@@ -114,7 +118,7 @@ public class GameplayMenuSetup : MonoBehaviour
         panels[0] = GameObject.Find("Use_Glass");
         panels[1] = GameObject.Find("Use_Heater");
     }
-    void selectInteractionWindow(GameObject interactedObject)
+    void selectInteractionWindow()
     {
         
         switch (interactedObject.name)
@@ -136,11 +140,56 @@ public class GameplayMenuSetup : MonoBehaviour
         }
     }
 
-    void OpenBAO(GameObject interactedObject)
+    void OpenBAO()
     {
+        LastUpdateDropdownValue = 0;
+        string currentFunction = null;
+        if (GameObject.Find("ProgLayout").transform.childCount <= 1)
+        {
+            int j;
+            for (j = 0; j < interactedObject.GetComponent<ObjectInfo>().Functions.Length; j++)
+            {
+                if (j == Dropdown.GetComponent<Dropdown>().value) currentFunction = interactedObject.GetComponent<ObjectInfo>().Functions[j].FunctionName;
+            }
+        }
+
+        if (currentFunction != null && GameObject.Find(currentFunction).transform.childCount >= 2)
+        {
+            GameObject temp = GameObject.Find(currentFunction).transform.GetChild(1).gameObject;
+            temp.transform.SetParent(GameObject.Find("ProgLayout").transform);
+            temp.SetActive(true);
+        }
+        else
+        {
+            if(GameObject.Find("ProgLayout").transform.childCount < 1)
+            {
+                GameObject slot = Instantiate(StartSlot);
+                slot.transform.SetParent(GameObject.Find("ProgLayout").transform);
+                slot.GetComponent<RectTransform>().localPosition = new Vector3(0, 25, 0);
+                slot.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+                slot.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                slot.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -25);
+                slot.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, 40);
+            }
+        }
+
+        GameObject copy = Instantiate(interactedObject);
+        GameObject light = new GameObject();
+        light.AddComponent<Light>();
+        light.transform.position = new Vector3(-9, 1005, 5);
+        light.transform.SetParent(GameObject.Find("ObjectCamera").transform);
+        copy.transform.position = new Vector3(-9, 1004, 5);
+        if (copy.GetComponent<MeshFilter>()) copy.transform.localScale = new Vector3(1/copy.GetComponent<MeshFilter>().mesh.bounds.extents.x, 1/copy.GetComponent<MeshFilter>().mesh.bounds.extents.x, 1/copy.GetComponent<MeshFilter>().mesh.bounds.extents.x);
+        else if (copy.transform.GetChild(0).GetComponent<MeshFilter>()) copy.transform.localScale = new Vector3(1 / copy.transform.GetChild(0).GetComponent<MeshFilter>().mesh.bounds.extents.x, 1 / copy.transform.GetChild(0).GetComponent<MeshFilter>().mesh.bounds.extents.x, 1 / copy.transform.GetChild(0).GetComponent<MeshFilter>().mesh.bounds.extents.x);
+        copy.transform.rotation = Quaternion.Euler(0, -90, 0);
+        copy.transform.SetParent(GameObject.Find("ObjectCamera").transform);
+        copy.layer = LayerMask.NameToLayer("ObjectWindow");
+        foreach(Transform child in copy.transform.GetComponentsInChildren<Transform>())
+        {
+            child.gameObject.layer = LayerMask.NameToLayer("ObjectWindow");
+        }
         if (GameObject.Find("Dropdown"))
         {
-            //Debug.Log(GameObject.Find("Content").transform.GetChild(0).GetComponent<Text>().text.Split('\n').Length - 1);
             Dropdown.GetComponent<Dropdown>().options.Clear();
             foreach (Function fonction in interactedObject.GetComponent<ObjectInfo>().Functions)
             {
@@ -159,12 +208,54 @@ public class GameplayMenuSetup : MonoBehaviour
 
     IEnumerator UpdateBAOvariables()
     {
-        
+        if (GameObject.Find("Programming").transform.childCount > 1)
+        {
+            Destroy(GameObject.Find("Programming").transform.GetChild(1).gameObject);
+        }
+
+        if (GameObject.Find("ProgLayout").transform.GetChild(0).gameObject.activeSelf)
+        {
+            GameObject temp = GameObject.Find("ProgLayout").transform.GetChild(0).gameObject;
+            temp.transform.SetParent(GameObject.Find(interactedObject.GetComponent<ObjectInfo>().Functions[LastUpdateDropdownValue].FunctionName).transform);
+            temp.SetActive(false);
+        }
+        string currentFunction = null;
+        if (GameObject.Find("ProgLayout").transform.childCount <= 1)
+        {
+            int j;
+            for (j = 0; j < interactedObject.GetComponent<ObjectInfo>().Functions.Length; j++)
+            {
+                if (j == Dropdown.GetComponent<Dropdown>().value)
+                {
+                    currentFunction = interactedObject.GetComponent<ObjectInfo>().Functions[j].FunctionName;
+                }
+            }
+        }
+        if (currentFunction != null && GameObject.Find(currentFunction).transform.childCount >= 2)
+        {
+            GameObject temp = GameObject.Find(currentFunction).transform.GetChild(1).gameObject;
+            temp.transform.SetParent(GameObject.Find("ProgLayout").transform);
+            temp.SetActive(true);
+        }
+        else
+        {
+            if (GameObject.Find("ProgLayout").transform.childCount < 1)
+            {
+                GameObject slot = Instantiate(StartSlot);
+                slot.transform.SetParent(GameObject.Find("ProgLayout").transform);
+                slot.GetComponent<RectTransform>().localPosition = new Vector3(0, 25, 0);
+                slot.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+                slot.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                slot.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -25);
+                slot.GetComponent<RectTransform>().sizeDelta = new Vector2(-10, 40);
+            }
+        }
+
         foreach (Transform go in BAO.transform.GetChild(1).GetChild(0).GetChild(2))
         {
             Destroy(go.gameObject);
         }
-        int i;
+        int i,k = 0;
         GameObject variables = GameObject.Find("Variables_List");
         for (i = 0; i < variables.GetComponent<VariablesInfo>().VariablesName.Length; i++)
         {
@@ -172,22 +263,44 @@ public class GameplayMenuSetup : MonoBehaviour
             {
                 if (variables.GetComponent<VariablesInfo>().VariablesName[i] == varAssociated)
                 {
+                    k += 1;
                     GameObject var = new GameObject();
                     var.transform.parent = BAO.transform.GetChild(1).GetChild(0).GetChild(2);
                     var.transform.name = variables.GetComponent<VariablesInfo>().VariablesName[i];
                     Text varText = var.AddComponent<Text>();
-                    varText.text = variables.GetComponent<VariablesInfo>().VariablesName[i] + " - " + variables.GetComponent<VariablesInfo>().VariablesValue[i];
+                    varText.text = " -> " + variables.GetComponent<VariablesInfo>().VariablesValue[i];
                     varText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                     varText.resizeTextForBestFit = true;
-                    var.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.85f);
+                    var.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.85f);
                     var.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-                    var.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -i * 15, 0);
+                    var.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                    var.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 45 -k * 45);
                     var.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
                     varText.color = Color.black;
+
+                    GameObject var2 = Instantiate(Slot);
+                    var2.transform.SetParent(BAO.transform.GetChild(1).GetChild(0).GetChild(2));
+                    var2.transform.GetChild(0).GetComponent<DragHandler>().DragWindow = GameObject.Find("DragWindow");
+                    var2.transform.GetChild(0).GetComponent<DragHandler>().type = 1;
+                    var2.transform.GetChild(0).GetComponent<DragHandler>().dragID = "var";
+                    var2.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = variables.GetComponent<VariablesInfo>().VariablesSprite[i];
+                    var2.GetComponent<Image>().color = new Color(0, 0, 0, 0.5f);
+                    var2.transform.GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                    var2.GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.6f);
+                    var2.GetComponent<RectTransform>().anchorMax = new Vector2(0.4f, 1);
+                    var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                    var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 45 - k * 45);
+                    var2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+                    var2.transform.GetChild(0).GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                    var2.transform.GetChild(0).GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                    var2.transform.GetChild(0).GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+                    var2.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                    var2.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(-10, -10);
                     break;
                 }
             }
         }
+        LastUpdateDropdownValue = Dropdown.GetComponent<Dropdown>().value;
         yield return null;
     }
 
@@ -214,15 +327,17 @@ public class GameplayMenuSetup : MonoBehaviour
                 overlayActive = false;
                 interfaceUseActive = true;
                 interfaceProgramActive = false;
-                BAO.SetActive(false);
-                selectInteractionWindow(objectTargeted);
+                CloseBAO(false);
+                interactedObject = objectTargeted;
+                selectInteractionWindow();
                 pauseSwitch(false);
             }
             else
             {
                 overlayActive = false;
                 interfaceUseActive = true;
-                selectInteractionWindow(objectTargeted);
+                interactedObject = objectTargeted;
+                selectInteractionWindow();
                 pauseSwitch(false);
             }
         }
@@ -233,7 +348,7 @@ public class GameplayMenuSetup : MonoBehaviour
             {
                 overlayActive = true;
                 interfaceProgramActive = false;
-                BAO.SetActive(false);
+                CloseBAO(false);
                 pauseSwitch(true);
             }
             else if (interfaceUseActive)
@@ -248,9 +363,10 @@ public class GameplayMenuSetup : MonoBehaviour
                     Destroy(GameObject.Find("Blocker"));
                     Destroy(GameObject.Find("Dropdown List"));
                 }
-                BAO.SetActive(!BAO.activeSelf);
+                CloseBAO(!BAO.activeSelf);
                 Dropdown = GameObject.Find("Dropdown");
-                OpenBAO(storedObject);
+                interactedObject = storedObject;
+                OpenBAO();
                 pauseSwitch(false);
             }
             else
@@ -263,9 +379,10 @@ public class GameplayMenuSetup : MonoBehaviour
                     Destroy(GameObject.Find("Blocker"));
                     Destroy(GameObject.Find("Dropdown List"));
                 }
-                BAO.SetActive(!BAO.activeSelf);
+                CloseBAO(!BAO.activeSelf);
                 Dropdown = GameObject.Find("Dropdown");
-                OpenBAO(storedObject);
+                interactedObject = storedObject;
+                OpenBAO();
                 pauseSwitch(false);
             }
         }
@@ -279,16 +396,17 @@ public class GameplayMenuSetup : MonoBehaviour
             overlayActive = false;
             interfaceUseActive = true;
             interfaceProgramActive = false;
-            BAO.SetActive(false);
+            CloseBAO(false);
             pauseSwitch(false);
-            selectInteractionWindow(objectTargeted);
+            interactedObject = objectTargeted;
+            selectInteractionWindow();
             pauseSwitch(false);
         }
         if (inputA)
         {
             overlayActive = true;
             interfaceProgramActive = false;
-            BAO.SetActive(false);
+            CloseBAO(false);
             pauseSwitch(true);
         }
     }
@@ -315,10 +433,32 @@ public class GameplayMenuSetup : MonoBehaviour
                 Destroy(GameObject.Find("Blocker"));
                 Destroy(GameObject.Find("Dropdown List"));
             }
-            BAO.SetActive(!BAO.activeSelf);
+            CloseBAO(!BAO.activeSelf);
             Dropdown = GameObject.Find("Dropdown");
-            OpenBAO(storedObject);
+            interactedObject = storedObject;
+            OpenBAO();
             pauseSwitch(false);
         }
+    }
+
+    void CloseBAO(bool set)
+    {
+        if (!set)
+        {
+            foreach (Transform child in GameObject.Find("ObjectCamera").transform)
+            {
+                Destroy(child.gameObject);
+            }
+            if(GameObject.Find("ProgLayout") && GameObject.Find("ProgLayout").transform.childCount >= 1)
+            {
+                if (GameObject.Find("ProgLayout").transform.GetChild(0).gameObject.activeSelf)
+                {
+                    GameObject temp = GameObject.Find("ProgLayout").transform.GetChild(0).gameObject;
+                    temp.transform.SetParent(GameObject.Find(interactedObject.GetComponent<ObjectInfo>().Functions[Dropdown.GetComponent<Dropdown>().value].FunctionName).transform);
+                    temp.SetActive(false);
+                }
+            }
+        }
+        BAO.SetActive(set);
     }
 }

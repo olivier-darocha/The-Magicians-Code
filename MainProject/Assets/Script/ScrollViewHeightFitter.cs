@@ -16,7 +16,7 @@ public class ScrollViewHeightFitter : MonoBehaviour {
         {
             done = (int)(this.GetComponent<RectTransform>().rect.width / contentSize);
             int i = transform.childCount;
-            if (done != 1) this.GetComponent<RectTransform>().sizeDelta = new Vector2(-20, this.GetComponent<RectTransform>().sizeDelta.y / (done / (done - 1)));
+            this.GetComponent<RectTransform>().sizeDelta = new Vector2(-20, (i * contentSize + 2 * contentPadding + (i - 1) * contentSpacing + 80)/2);
         }
         else if(transform.name == "ProgContent")
         {
@@ -28,8 +28,9 @@ public class ScrollViewHeightFitter : MonoBehaviour {
 
     public void ChangeSize()
     {
+        
         if (transform.name == "Content")
-        {
+        {/*
             int i = transform.childCount;
             if (contentSize * 4 + 2 * contentPadding + 3 * contentSpacing > this.GetComponent<RectTransform>().rect.width && done == 4)
             {
@@ -60,7 +61,7 @@ public class ScrollViewHeightFitter : MonoBehaviour {
             {
                 this.GetComponent<RectTransform>().sizeDelta = new Vector2(-20, this.GetComponent<RectTransform>().sizeDelta.y / ((done + 1) / done));
                 done = 4;
-            }
+            }*/
         }
         else if (transform.name == "ProgContent")
         {
