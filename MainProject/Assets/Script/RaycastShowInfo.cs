@@ -33,7 +33,6 @@ public class RaycastShowInfo : MonoBehaviour
 
         if (!isPaused && Physics.Raycast(ray, out hit, 3))
         {
-            Debug.Log(hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName);
             interactedObject = hit.collider.gameObject;
             if (interactedObject.tag == "Interactable")// || hit.collider.gameObject.tag == "Programmable")
             {
@@ -59,7 +58,6 @@ public class RaycastShowInfo : MonoBehaviour
                     if (interactedObject.tag != "Interactable" && interactedObject.tag != "Programmable")
                         GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
                 }
-                GameObject.Find("Object_aimed").GetComponent<Text>().text = "";
                 notredo = false;
             }
         }

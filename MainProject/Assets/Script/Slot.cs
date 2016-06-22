@@ -345,6 +345,7 @@ public class Slot : MonoBehaviour, IDropHandler
             }
             var.transform.SetParent(temp.transform.GetChild(0));
             var.AddComponent<VariableId>().varId = var2.GetComponent<DragHandler>().varDragId.ToString();
+            var.tag = "var";
         }
     }
 
@@ -360,6 +361,7 @@ public class Slot : MonoBehaviour, IDropHandler
         }
         value.transform.SetParent(temp.transform.GetChild(0));
         value.AddComponent<Value>();
+        value.tag = "value";
 
 
         if (type == 1 && !GetComponent<Slot>().used)
@@ -623,6 +625,7 @@ public class Slot : MonoBehaviour, IDropHandler
                     break;
             }
             sign.AddComponent<Sign>().sign = s;
+            sign.tag = "sign";
         }
     }
 
@@ -692,9 +695,19 @@ public class Slot : MonoBehaviour, IDropHandler
             {
                 if (y.order == GetComponent<Slot>().dropNumber) t = y.gameObject;
             }
-            func.transform.SetParent(t.transform.GetChild(1));
-            func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
-            func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;
+            if (var2.transform.parent.parent.gameObject.GetComponent<Slot>().child_index == 0)
+            {
+                func.tag = "freeFunc";
+                func.transform.SetParent(GameObject.Find("Interpreter").transform);
+                func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
+                func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;
+            }
+            else
+            {
+                func.transform.SetParent(t.transform.GetChild(1));
+                func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
+                func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;
+            }
 
 
         }

@@ -76,7 +76,7 @@ public class GameplayMenuSetup : MonoBehaviour
             {
                 if (storedObject != hit.collider.gameObject)
                     storedObject = hit.collider.gameObject;
-                //Debug.Log(hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName);
+                
                 GameObject.Find("Object_aimed").GetComponent<Text>().text = hit.collider.gameObject.GetComponent<ObjectInfo>().ObjectName;
 
                 if (interfaceUseActive || interfaceProgramActive)

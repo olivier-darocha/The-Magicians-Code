@@ -22,7 +22,7 @@ public class BetterInterpreter : MonoBehaviour
     List<GameObject> getToolsInProgramList()
     {
         List<GameObject> temp = GameObject.FindGameObjectsWithTag(toolTag).ToList();
-        //temp.AddRange(GameObject.FindGameObjectsWithTag("freeFunc"));
+        temp.AddRange(GameObject.FindGameObjectsWithTag("freeFunc"));
         SortedDictionary<int, GameObject> dic = new SortedDictionary<int, GameObject>();
         foreach(GameObject o in temp)
         {
@@ -71,7 +71,7 @@ public class BetterInterpreter : MonoBehaviour
             // s'il y a des fonctions hors des conditions
             if (currentTool.tag.Equals("freeFunc"))
             {
-                switch (currentTool.transform.GetChild(1).GetChild(0).GetComponent<FunctionId>().functionId)
+                switch (currentTool.GetComponent<FunctionId>().functionId)
                 {
                     case "16":
                         fillGlass();
@@ -124,7 +124,6 @@ public class BetterInterpreter : MonoBehaviour
                             int j = 0;
                             while (j < codeContent.Count)
                             {
-                                Debug.Log(currentTool.name);
                                 switch (currentTool.transform.GetChild(1).GetChild(0).GetComponent<FunctionId>().functionId)
                                 {
                                     case "16":

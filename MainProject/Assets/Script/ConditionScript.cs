@@ -8,17 +8,13 @@ public class ConditionScript : MonoBehaviour
     public int order;
     private string conditionTag;
     private GameObject condition;
-    private GameObject neg;
     private GameObject glass;
     private List<GameObject> conditionList;
-
-    private bool valueBool;
-    private int valueInt;
-    private float valueFloat;
 
     public bool getConditionValue()
     {
         conditionList = getConditions();
+
         int conditionListCount = conditionList.Count;
         
         switch (conditionList[0].GetComponent<VariableId>().varId)
@@ -33,19 +29,20 @@ public class ConditionScript : MonoBehaviour
                 else
                     return interpretFloat(InteractionGlass.quantity, conditionList[1], conditionList[2]);
             case "4": // chauffage/feu
-                return interpretBool(InteractionHeater.fireState);
+                Debug.Log(conditionList[2].GetComponent<Value>().valueBool);
+                return interpretBool(InteractionHeater.fireState, conditionList[2].GetComponent<Value>().valueBool);
             case "5": // neige
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[2]), conditionList[1], conditionList[2]);
+                return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[2]), conditionList[1], conditionList[2]);
             case "8": // pommes
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[3]), conditionList[1], conditionList[2]);
+                return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[3]), conditionList[1], conditionList[2]);
             case "9": // farine
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[4]), conditionList[1], conditionList[2]);
+                return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[4]), conditionList[1], conditionList[2]);
             case "10": // beurre
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[5]), conditionList[1], conditionList[2]);
+                return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[5]), conditionList[1], conditionList[2]);
             case "11": // lait
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[6]), conditionList[1], conditionList[2]);
+                return interpretFloat(float.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[6]), conditionList[1], conditionList[2]);
             case "7": // état de la tarte
-                return interpretInt(int.Parse(GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[7]), conditionList[1], conditionList[2]);
+                return interpretBool(InteractionPie.doughState, conditionList[2].GetComponent<Value>().valueBool);
             default:
                 break;
         }
@@ -58,7 +55,6 @@ public class ConditionScript : MonoBehaviour
     {
         condition = tool;
         conditionTag = tag;
-        neg = GameObject.FindGameObjectWithTag("var");
         glass = GameObject.Find("Use_Glass");
     }
 
@@ -74,33 +70,39 @@ public class ConditionScript : MonoBehaviour
                 conditionContainer = child.gameObject;
                 foreach (Transform c in conditionContainer.transform)
                 {
-                    if (c.gameObject.tag != "negation")
-                    {
-                        list.Add(c.gameObject);
-                    }
+                    list.Add(c.gameObject);
                 }
             }
         }
-        
-        if (list.Count == 3)
-            list = sortList(list);
+        List<GameObject> new_list = new List<GameObject>();
+        new_list = sortList(list);
 
-        return list;
+        return new_list;
     }
 
     List<GameObject> sortList(List<GameObject> list)
     {
-        List<GameObject> temp = list;
+        GameObject[] temp = new GameObject[3];
         foreach (GameObject obj in list)
         {
-            if (obj.tag == "var")
-                temp[0] = obj;
-            else if (obj.tag == "sign")
-                temp[1] = obj;
-            else if (obj.tag == "value")
-                temp[2] = obj;
+            
+            switch (obj.tag)
+            {
+                case "var":
+                    temp[0] = obj;
+                    break;
+                case "sign":
+                    temp[1] = obj;
+                    break;
+                case "value":
+                    temp[2] = obj;
+                    break;
+                default:
+                    break;
+            }
         }
-        return temp;
+        
+        return new List<GameObject>(temp);
     }
 
 
@@ -127,33 +129,8 @@ public class ConditionScript : MonoBehaviour
     }
 
 
-    bool interpretInt(int var, GameObject sign, GameObject value)
+    bool interpretBool(bool boolVar, bool valBool)
     {
-        float val = value.GetComponent<Value>().valueInt;
-        switch (sign.GetComponent<Sign>().sign)
-        {
-            case "==":
-                return (var == val);
-            case "!=":
-                return (var != val);
-            case "<":
-                return (var < val);
-            case "<=":
-                return (var <= val);
-            case ">":
-                return (var > val);
-            case ">=":
-                return (var >= val);
-            default:
-                return false;
-        }
-    }
-
-    bool interpretBool(bool boolVar)
-    {
-        if (neg.GetComponent<VariableId>().negationState)
-            return boolVar;
-        else
-            return !boolVar;
+        return boolVar == valBool;
     }
 }
