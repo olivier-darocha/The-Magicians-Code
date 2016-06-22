@@ -262,7 +262,7 @@ public class GameplayMenuSetup : MonoBehaviour
             }
         }
 
-        foreach (Transform go in BAO.transform.GetChild(1).GetChild(0).GetChild(2))
+        foreach (Transform go in BAO.transform.GetChild(1).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0))
         {
             Destroy(go.gameObject);
         }
@@ -276,12 +276,12 @@ public class GameplayMenuSetup : MonoBehaviour
                 {
                     k += 1;
                     GameObject var = new GameObject();
-                    var.transform.parent = BAO.transform.GetChild(1).GetChild(0).GetChild(2);
+                    var.transform.parent = BAO.transform.GetChild(1).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0);
                     var.transform.name = variables.GetComponent<VariablesInfo>().VariablesName[i];
                     Text varText = var.AddComponent<Text>();
                     varText.text = " -> " + variables.GetComponent<VariablesInfo>().VariablesValue[i];
                     varText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                    varText.resizeTextForBestFit = true;
+                    varText.resizeTextForBestFit = false;
                     var.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.85f);
                     var.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                     var.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
@@ -290,7 +290,7 @@ public class GameplayMenuSetup : MonoBehaviour
                     varText.color = Color.black;
 
                     GameObject var2 = Instantiate(Slot);
-                    var2.transform.SetParent(BAO.transform.GetChild(1).GetChild(0).GetChild(2));
+                    var2.transform.SetParent(BAO.transform.GetChild(1).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0));
                     var2.transform.GetChild(0).GetComponent<DragHandler>().DragWindow = GameObject.Find("DragWindow");
                     var2.transform.GetChild(0).GetComponent<DragHandler>().type = 1;
                     var2.transform.GetChild(0).GetComponent<DragHandler>().dragID = "var";
@@ -298,7 +298,7 @@ public class GameplayMenuSetup : MonoBehaviour
                     var2.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = variables.GetComponent<VariablesInfo>().VariablesSprite[i];
                     var2.GetComponent<Image>().color = new Color(0, 0, 0, 0.5f);
                     var2.transform.GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0);
-                    var2.GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.6f);
+                    var2.GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.85f);
                     var2.GetComponent<RectTransform>().anchorMax = new Vector2(0.4f, 1);
                     var2.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
                     var2.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 45 - k * 45);

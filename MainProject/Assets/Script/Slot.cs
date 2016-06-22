@@ -340,7 +340,7 @@ public class Slot : MonoBehaviour, IDropHandler
                 {
                     if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                 }
-                foreach (Transform o in a.transform)
+                foreach (Transform o in a.transform.GetChild(0))
                 {
                     if (o.gameObject.name == "var") Destroy(o.gameObject);
                 }
@@ -461,7 +461,7 @@ public class Slot : MonoBehaviour, IDropHandler
                     {
                         if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                     }
-                    foreach (Transform o in a.transform)
+                    foreach (Transform o in a.transform.GetChild(0))
                     {
                         if (o.gameObject.name == "value") Destroy(o.gameObject);
                     }
@@ -538,7 +538,7 @@ public class Slot : MonoBehaviour, IDropHandler
                     {
                         if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                     }
-                    foreach(Transform o in a.transform)
+                    foreach(Transform o in a.transform.GetChild(0))
                     {
                         if (o.gameObject.name == "value") Destroy(o.gameObject);
                     }
@@ -552,6 +552,11 @@ public class Slot : MonoBehaviour, IDropHandler
                 go4.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
                 go4.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                 go4.GetComponent<RectTransform>().sizeDelta = new Vector2(-5, -5);
+
+                var2.GetComponent<Toggle>().onValueChanged.AddListener(delegate
+                {
+                    value.GetComponent<Value>().valueBool = var2.GetComponent<Toggle>().isOn;
+                });
 
                 value.GetComponent<Value>().valueBool = var2.GetComponent<Toggle>().isOn;
             }
@@ -697,6 +702,15 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().targetGraphic = go5.GetComponent<Image>();
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
+                GameObject a = null;
+                foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
+                {
+                    if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
+                }
+                foreach (Transform o in a.transform.GetChild(1))
+                {
+                    if (o.gameObject.name == "func") Destroy(o.gameObject);
+                }
                 var2.transform.parent.parent.GetComponent<Slot>().used = false;
                 Destroy(temp);
             });
