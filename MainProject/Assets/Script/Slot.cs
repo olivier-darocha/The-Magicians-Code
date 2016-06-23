@@ -703,13 +703,23 @@ public class Slot : MonoBehaviour, IDropHandler
             go4.GetComponent<Button>().onClick.AddListener(() =>
             {
                 GameObject a = null;
+                GameObject b = null;
                 foreach (ConditionScript y in interpreterParent.GetComponentsInChildren<ConditionScript>())
                 {
                     if (y.order == GetComponent<Slot>().dropNumber) a = y.gameObject;
                 }
-                foreach (Transform o in a.transform.GetChild(1))
+
+                foreach(Transform c in interpreterParent.transform)
                 {
-                    if (o.gameObject.name == "func") Destroy(o.gameObject);
+                    if (c.tag == "freeFunc" && c.GetComponent<FunctionId>().order == GetComponent<Slot>().dropNumber)
+                        Destroy(c.gameObject);
+                }
+                if(a != null && a.transform.childCount > 0)
+                {
+                    foreach (Transform o in a.transform.GetChild(1))
+                    {
+                        if (o.gameObject.tag == "func") Destroy(o.gameObject);
+                    }
                 }
                 var2.transform.parent.parent.GetComponent<Slot>().used = false;
                 Destroy(temp);
@@ -737,6 +747,7 @@ public class Slot : MonoBehaviour, IDropHandler
             }
             else
             {
+                func.tag = "func";
                 func.transform.SetParent(t.transform.GetChild(1));
                 func.AddComponent<FunctionId>().functionId = var2.GetComponent<DragHandler>().varDragId.ToString();
                 func.GetComponent<FunctionId>().order = GetComponent<Slot>().dropNumber;

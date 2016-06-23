@@ -11,7 +11,7 @@ public class Daycycle : MonoBehaviour {
         /*GameObject[] go = GameObject.FindGameObjectsWithTag("Mesh");
         foreach(GameObject go2 in go)
         {
-            Debug.Log(go2.transform.name + " - " + go2.GetComponent<MeshFilter>().mesh.triangles.Length / 3);
+            
         }*/
     }
 

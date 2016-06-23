@@ -45,7 +45,6 @@ public class Interpreter : MonoBehaviour
             return false;//condition.GetComponent<VariableId>().value;
         else
         {
-            Debug.Log("error");
             return false;
         }
     }

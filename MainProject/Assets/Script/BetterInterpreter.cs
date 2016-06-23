@@ -29,7 +29,6 @@ public class BetterInterpreter : MonoBehaviour
     List<GameObject> getToolsInProgramList()
     {
         List<GameObject> temp = new List<GameObject>();
-        Debug.Log(parent.name);
         foreach (Transform o in parent.transform)
         {
             if (o.gameObject.tag.Equals(toolTag))
@@ -42,10 +41,12 @@ public class BetterInterpreter : MonoBehaviour
         SortedDictionary<int, GameObject> dic = new SortedDictionary<int, GameObject>();
         foreach(GameObject o in temp)
         {
-            if(o.tag == toolTag)
+            if (o.tag == toolTag)
                 dic.Add(o.GetComponent<ConditionScript>().order, o);
             else
+            {
                 dic.Add(o.GetComponent<FunctionId>().order, o);
+            }
         }
         return new List<GameObject>(dic.Values);
     }
@@ -136,6 +137,7 @@ public class BetterInterpreter : MonoBehaviour
                             int j = 0;
                             while (j < codeContent.Count)
                             {
+                                
                                 switch (currentTool.transform.GetChild(1).GetChild(0).GetComponent<FunctionId>().functionId)
                                 {
                                     case "16":
@@ -290,21 +292,25 @@ public class BetterInterpreter : MonoBehaviour
     void addButter()
     {
         InteractionPie.butterQuantity += 10;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[5] = InteractionPie.butterQuantity.ToString();
     }
 
     void addMilk()
     {
         InteractionPie.milkQuantity++;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[6] = InteractionPie.milkQuantity.ToString();
     }
 
     void addFlour()
     {
         InteractionPie.flourQuantity += 10;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[4] = InteractionPie.flourQuantity.ToString(); ;
     }
 
     void addApple()
     {
         InteractionPie.appleQuantity++;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[3] = InteractionPie.appleQuantity.ToString();
     }
 
 }

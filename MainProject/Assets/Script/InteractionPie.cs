@@ -25,7 +25,7 @@ public class InteractionPie : MonoBehaviour {
         pieState = false;
         doughState = false;
         butterQuantity = 0;
-        flourQuantity = 200;
+        flourQuantity = 0;
         milkQuantity = 0;
         appleQuantity = 0;
     }
@@ -49,22 +49,43 @@ public class InteractionPie : MonoBehaviour {
     {
         if (pieState)
         {
+            pieState = false;
             pie.SetActive(false);
+        }
+        if (radioactivePieState)
+        {
+            radioactivePieState = false;
+            radioactivePie.SetActive(false);
         }
     }
 
     public void bake()
     {
+        
         if (doughState && (appleQuantity >= 3 && appleQuantity < 6))
         {
+            updateVariables();
             pieState = true;
             radioactivePieState = false;
         }
         else if (!doughState)
         {
+            updateVariables();
             pieState = false;
             radioactivePieState = true;
         }
     }
     
+    void updateVariables()
+    {
+        butterQuantity = 0;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[5] = butterQuantity.ToString();
+        milkQuantity = 0;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[6] = milkQuantity.ToString();
+        flourQuantity = 0;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[4] = flourQuantity.ToString(); ;
+        appleQuantity = 0;
+        GameObject.Find("Variables_List").GetComponent<VariablesInfo>().VariablesValue[3] = appleQuantity.ToString();
+
+    }
 }
